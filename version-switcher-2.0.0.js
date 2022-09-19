@@ -135,7 +135,7 @@
                             }
                         }
                     });
-                    $('#platforms').addClass('processed')
+                    $('#platforms').addClass('processed');
                 });
 
             } else if (s.isRetired) {
