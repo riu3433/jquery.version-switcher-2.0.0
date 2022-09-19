@@ -110,7 +110,7 @@
                 var platK = s.version + "~" + s.platform;
                 var versionLabel = (s.customVersionLabel) ? s.customVersionLabel : (s.version in s.versionMapping) ? s.versionMapping[s.version] : s.version;
                 var versionName = (typeof s.customVersionName !== 'undefined') ? s.customVersionName : 'ArcGIS';
-                var currentPlatTxt = (s.switcher.switchercases[platK]) ? s.versionName + ' ' + versionLabel + ' (' + s.switcher.switchercases[platK] + ')' : versionName + ' ' + versionLabel;
+                var currentPlatTxt = (s.switcher.switchercases[platK]) ? versionName + ' ' + versionLabel + ' (' + s.switcher.switchercases[platK] + ')' : versionName + ' ' + versionLabel;
                 var linkData = self.generateSwitcherLinks();
 
                 var links = '<div class="trailer-1" id="platforms">' + '<span class="product text-light-gray">' + currentPlatTxt + '</span>';
