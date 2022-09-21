@@ -5,6 +5,7 @@
         version: '2.0.0',
         defaults: {
             archiveUrl: "https://resources.arcgis.com/en/help/",
+            basepath: "",
             currentUrl: document.location.href,
             customVersionLabel: "",
             customVersionName: "ArcGIS",
@@ -57,6 +58,8 @@
             this.settings.isEnglish = this.settings.currentUrl.match(/(\/en\/)/) != null;
             this.settings.version = this.getVersion(data.versionOptions, this.settings.isEnglish, this.settings.pathName);
 
+            this.settings.basepath = this.getBasepath();
+
             var pathparts = this.settings.pathName.split("/");
             this.settings.filename = pathparts[pathparts.length - 1];
             this.settings.isHome = pathparts.length <= 4;
@@ -68,6 +71,11 @@
             this.settings.isRetired = this.settings.pathName.match(this.settings.versionRetired.pattern) != null;
             this.settings.switcher.switcherdisplay = !this.settings.isRetired;
             this.settings.fallbackTopic = "/{0}/documentation/".format(this.settings.localeDir.toLowerCase());
+        },
+        getBasepath: function () {
+            return this.settings.switcher.switchercases[this.settings.version].basepath != undefined ?
+                this.settings.switcher.switchercases[this.settings.version].basepath :
+                this.settings.switcher.basepaths[this.settings.version]
         },
         getSwitcher: function (o, u) {
             var s = o.filter(z => u.match(z.name));
@@ -107,31 +115,33 @@
             var s = this.settings;
 
             if (!(s.isHome) && (s.switcher.switcherdisplay)) {
-                var platK = s.version + "~" + s.platform;
+                var c = s.switcher.switchercases[s.version].platforms != undefined ? s.switcher.switchercases[s.version].platforms.filter(z => z.id == s.platform)[0] :
+                    s.switcher.platforms != undefined ? s.switcher.platforms.filter(z => z.id == s.platform)[0] : undefined;
+
                 var versionLabel = (s.customVersionLabel) ? s.customVersionLabel : (s.version in s.versionMapping) ? s.versionMapping[s.version] : s.version;
                 var versionName = (typeof s.customVersionName !== 'undefined') ? s.customVersionName : 'ArcGIS';
-                var currentPlatTxt = (s.switcher.switchercases[platK]) ? versionName + ' ' + versionLabel + ' (' + s.switcher.switchercases[platK] + ')' : versionName + ' ' + versionLabel;
+                var currentPlatTxt = c != undefined ? versionName + ' ' + versionLabel + ' (' + c.title + ')' : versionName + ' ' + versionLabel;
                 var linkData = self.generateSwitcherLinks();
 
                 var links = '<div class="trailer-1" id="platforms">' + '<span class="product text-light-gray">' + currentPlatTxt + '</span>';
                 links += '<span class="divider"> | </span><span class="dropdown js-dropdown dropdown-btn js-dropdown-toggle"><button class="btn btn-transparent" href="#" tabindex="0" aria-haspopup="true" aria-expanded="false"> ' + this.t('other-versions');
                 links += '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 -10 32 40" class="svg-icon padding-left-half"><path d="M28 9v5L16 26 4 14V9l12 12L28 9z"/></svg></button>';
-                links += linkData[0];
+                links += linkData.menuItems;
                 links += '</span>';
                 links += '<span class="divider">|</span><span>&nbsp;<a href="' + s.archiveUrl + '" tabindex="2" target="_blank"> ' + this.t('help-archive');
                 links += '</a></span></div>';
 
-                var ajaxRequests = $.map(linkData[1], function (item) { return (item[1] == "javascript:void(0);") ? null : $.get(item[1]); });
+                var ajaxRequests = $.map(linkData.versions, function (item) { return (item.url == "javascript:void(0);") ? null : $.get(item.url); });
                 ajaxRequests.push($(s.switcherLocation).after(links));
 
                 $.whenAll(ajaxRequests).always(function () {
                     $.each(ajaxRequests, function (i, req) {
-                        if (i < linkData[1].length) {
+                        if (i < linkData.versions.length) {
                             if ((req.status || req[2].status) != 200) {
-                                $('#' + linkData[1][i][0]).attr("href", "javascript:void(0)").removeClass("available").addClass("disabled");
+                                $('#' + linkData.versions[i].id).attr("href", "javascript:void(0)").removeClass("available").addClass("disabled");
 
                             } else {
-                                $('#' + linkData[1][i][0]).attr("href", linkData[1][i][1]).removeClass("disabled").addClass("available");
+                                $('#' + linkData.versions[i].id).attr("href", linkData.versions[i].url).removeClass("disabled").addClass("available");
                             }
                         }
                     });
@@ -140,7 +150,6 @@
 
             } else if (s.isRetired) {
                 $(s.versionRetired.messageLocation).after(s.versionRetired.messageContainer.format(self.t("version-retire-msg").format(s.version, s.pathName.replace(s.version, "latest"), s.archiveUrl)));
-
             }
 
             return this; // make the function chainable
@@ -171,55 +180,127 @@
             });
         },
         generateSwitcherLinks: function () {
-            var switcherLinks = '<nav class="dropdown-menu">',
+            var menuItems = '<nav class="dropdown-menu">',
                 self = this,
                 s = this.settings,
                 versions = [];
 
-            $.each(s.switcher.switchercases, function (k, v) {
-                var url = self.getTargetUrl(k),
-                    linkId = k.replace(/[^a-z0-9\s]/gi, '');
+            $.each(s.switcher.switchercases, function (version, values) {
+                var id = version.replace(/[^a-z0-9\s]/gi, '');
+                var menuItemClass = "available";
+                var path = values.basepath != undefined ? "/" + self.getCurrentLang() + "/" + values.basepath : "";
+                var platforms = values.platforms != undefined ? values.platforms : s.switcher.platforms;
+                var url = "", targetUrl = {};
 
-                if (k.indexOf("~") >= 0) {
-                    var keys = k.split("~");
-                    if (!keys[1]) {
-                        switcherLinks += '<span class="dropdown-title">' + v + '</span>';
-                    } else {
-                        versions.push([linkId, url]);
-                        switcherLinks += '<a id="' + linkId + '" data-plat="' + keys[1] + '" class="dropdown-link ' + s.switcherLinkClass + '" data-version="' + keys[0] + '" href="' + url + '">' + v + '</a>';
-                    }
+                if (platforms != undefined) {
+                    menuItems += '<span class="dropdown-title">' + (values.title != undefined ? values.title : version) + '</span>';
 
-                } else {
-                    versions.push([linkId, url]);
-                    switcherLinks += '<a id="' + linkId + '" data-plat="' + k + '" class="dropdown-link ' + s.switcherLinkClass + '" data-version="' + k + '" href="' + url + '">' + v + '</a>';
+                    $.each(platforms, function (index, platform) {
+                        id = version.replace(/[^a-z0-9\s]/gi, '') + platform.id;
+                        targetUrl = self.getTargetUrl({ matches: { platformId: platform.id, path }, specialCaseId: version + "~" + platform.id });
+                        //if (s.pathName.indexOf("/" + platform.id) >= 0 && s.pathName.indexOf(path) >= 0) {
+                        //    menuItemClass = "is-active";
+                        //    url = (s.pathName.split("/").slice(0, -1).join("/") + "/" + s.filename).replace("//", "/");
+
+                        //} else {
+                        //    var filename = self.specialCasesLookup(version + "~" + platform.id, s.filename);
+                        //    if (filename != "x") {
+                        //        menuItemClass = "available";
+                        //        url = (s.pathName.split("/").slice(0, -1).join("/") + "/" + filename).replace("/" + self.getCurrentLang() + "/" + s.basepath, path).replace(s.platform, platform.id).replace("//", "/");
+
+                        //    } else {
+                        //        menuItemClass = "disabled";
+                        //        url = "javascript:void(0);";
+                        //    }
+                        //}
+
+                        menuItems += '<a id="' + id + '" data-plat="' + platform.id +
+                            '" class="dropdown-link ' + targetUrl.cssClass + '" data-version="' + version + '" href="' + targetUrl.url + '">' + platform.title + '</a>';
+                        versions.push({ id, url: targetUrl.url });
+                    });
+
+                } else if (path !== "") {
+                    targetUrl = self.getTargetUrl({ matches: { version, path }, specialCaseId: version });
+                    //if (s.pathName.indexOf("/" + version) >= 0 && s.pathName.indexOf(path) >= 0) {
+                    //    menuItemClass = "is-active";
+                    //    url = (s.pathName.split("/").slice(0, -1).join("/") + "/" + s.filename).replace("//", "/");
+
+                    //} else {
+                    //    var filename = self.specialCasesLookup(version, s.filename);
+                    //    if (filename != "x") {
+                    //        menuItemClass = "available";
+                    //        url = (path + "/" + filename).replace(s.version, version).replace("//", "/");
+
+                    //    } else {
+                    //        menuItemClass = "disabled";
+                    //        url = "javascript:void(0);";
+                    //    }
+                    //}
+
+                    menuItems += '<a id="' + id + '" data-plat="' + version
+                        + '" class="dropdown-link ' + targetUrl.cssClass + '" data-version="' + version
+                        + '" href="' + targetUrl.url + '">' + (values.title != undefined ? values.title : version) + '</a>';
+
+                    versions.push({ id, url: targetUrl.url });
+
+                } else if ($.isEmptyObject(values)) {
+                    menuItems += '<a id="' + id + '" data-plat="' + version + '" class="dropdown-link disabled" data-version="' + version
+                        + '" href="javascript:void(0);">' + version + '</a>';
                 }
             });
-            switcherLinks += '</nav>'
+            menuItems += '</nav>'
 
-            return [switcherLinks, versions];
+            return { menuItems, versions };
         },
         getCurrentLang: function () {
             return this.settings.localeDir || "en";
         },
-        getTargetUrl: function (key) {
-            var kArr = key.split("~"),
-                newVersion = kArr[0],
-                k = (kArr.length > 1) ? kArr[1] : key,
-                s = this.settings;
+        getTargetUrl: function (val) {
+            var s = this.settings;
+            var r = $.map(val.matches, function (itm) { return ("\/" + itm).replace("//", "/"); });
+            var matched = s.pathName.match(new RegExp(r.join("|"), 'g'));
 
-            var versionPath = s.switcher.basepaths[newVersion],
+            if (matched && matched.length == r.length) {
+                return { cssClass: "is-active", url: (s.pathName.split("/").slice(0, -1).join("/") + "/" + s.filename).replace("//", "/") };
+            }
+            else {
+                var filename = this.specialCasesLookup(val.specialCaseId, s.filename);
+                if (filename != "x") {
+                    var url = "";
+                    if (val.matches.platformId != undefined) {
+                        url = (s.pathName.split("/").slice(0, -1).join("/") + "/" + filename).replace("/" + this.getCurrentLang() + "/" + s.basepath, val.matches.path).replace(s.platform, val.matches.platformId).replace("//", "/");
+                    }
+                    if (val.matches.version != undefined) {
+                        url = (val.matches.path + "/" + filename).replace(s.version, val.matches.version).replace("//", "/");
+                    }
+                    return { cssClass: "available", url };
+
+                } else {
+                    return { cssClass: "disabled", url: "javascript:void(0);" };
+                }
+            }
+        },
+        getTargetUrlOld: function (values, platform) {
+            //var kArr = key.split("~"),
+            //    newVersion = kArr[0],
+            //    k = (kArr.length > 1) ? kArr[1] : key,
+            var s = this.settings;
+            //var url = "/" + this.getCurrentLang() + "/" + values.basepath + "/" + platform.id + "/" + s.filename;
+            var path = values.basepath != undefined ? "/" + this.getCurrentLang() + "/" + values.basepath : "";
+            var versionPath = values.basepath, //s.switcher.basepaths[version],
                 prefixBase = (versionPath) ? '/' + this.getCurrentLang() + '/' + versionPath : "",
-                prefixPlat = "/" + s.switcher.basepaths[k],
+                prefixPlat = "/" + s.switcher.basepaths[platform],
                 pathpfx = s.pathName.split("/").slice(0, -1).join("/") + "/",
                 url, fileName;
 
-            if (pathpfx.indexOf(prefixPlat) >= 0 && pathpfx.indexOf(prefixBase) >= 0) {
+            console.log(s.pathName.indexOf(platform.id) >= 0 && s.pathName.indexOf(path) >= 0);
+
+            if (s.pathName.indexOf(platform.id) >= 0 && s.pathName.indexOf(path) >= 0) {
                 s.switcherLinkClass = "is-active";
-                url = pathpfx + s.filename;
-                //url = window.location.pathname;
+                url = path + s.filename;
 
             } else {
-                var fnameVal = this.specialCasesLookup(key, s.filename);
+                var fnameVal = ""; //this.specialCasesLookup(version, s.filename);
 
                 if (fnameVal == "x") {
                     // disable click
@@ -232,7 +313,7 @@
                     //works: /en/web-adaptor/beta/install/java-linux/welcome-arcgis-web-adaptor-install-guide.htm
                     //NOT: /en/collector/windows/collect-data/collect-tutorial.htm
                     //url = "../" + key + "/" + fnameVal;
-                    url = pathpfx.replace(s.switcher.basepaths[s.version], s.switcher.basepaths[newVersion]).replace(s.switcher.basepaths[s.platform], s.switcher.basepaths[k])
+                    //url = pathpfx.replace(s.switcher.basepaths[s.version], s.switcher.basepaths[version]).replace(s.switcher.basepaths[s.platform], s.switcher.basepaths[platform])
                     url += fnameVal;
 
                     s.switcherLinkClass = "available";
@@ -277,7 +358,7 @@
         },
         updateTabLinks: function () {
             var self = this;
-            var s = self.settings;
+            var s = this.settings;
 
             $(self.settings.linkUpdateSection + ' a').each(function (i, el) {
                 var href = $(el).attr("href"),
