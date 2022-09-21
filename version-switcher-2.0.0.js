@@ -131,7 +131,7 @@
                 links += '<span class="divider">|</span><span>&nbsp;<a href="' + s.archiveUrl + '" tabindex="2" target="_blank"> ' + this.t('help-archive');
                 links += '</a></span></div>';
 
-                var ajaxRequests = $.map(linkData.versions, function (item) { return (item.url == "javascript:void(0);") ? null : $.get(item.url); });
+                var ajaxRequests = $.map(linkData.versions, function (item) { return (item.url === "javascript:void(0);" ? null : $.get(item.url)); });
                 ajaxRequests.push($(s.switcherLocation).after(links));
 
                 $.whenAll(ajaxRequests).always(function () {
@@ -196,7 +196,7 @@
 
                     $.each(platforms, function (index, platform) {
                         id = version.replace(/[^a-z0-9\s]/gi, '') + platform.id;
-                        targetUrl = self.getTargetUrl({ matches: { platformId: platform.id, path }, specialCaseId: version + "~" + platform.id });
+                        targetUrl = self.getTargetUrl({ matches: { platformId: platform.id, path }, version });
                         menuItems += '<a id="' + id + '" data-plat="' + platform.id +
                             '" class="dropdown-link ' + targetUrl.cssClass + '" data-version="' + version + '" href="' + targetUrl.url + '">' + platform.title + '</a>';
                         versions.push({ id, url: targetUrl.url });
@@ -231,20 +231,19 @@
                 return { cssClass: "is-active", url: (s.pathName.split("/").slice(0, -1).join("/") + "/" + s.filename).replace("//", "/") };
             }
             else {
-                var filename = this.specialCasesLookup(values.specialCaseId, s.filename);
-                if (filename != "x") {
+                if (this.specialCasesLookup(values.version, values.matches.platformId)) {
                     var url = "";
                     if (values.matches.platformId != undefined) {
-                        url = (s.pathName.split("/").slice(0, -1).join("/") + "/" + filename).replace("/" + this.getCurrentLang() + "/"
+                        url = (s.pathName.split("/").slice(0, -1).join("/") + "/" + s.filename).replace("/" + this.getCurrentLang() + "/"
                             + s.basepath, values.matches.path).replace(s.platform, values.matches.platformId).replace("//", "/");
                     }
                     if (values.matches.version != undefined) {
-                        url = (values.matches.path + "/" + filename).replace(s.version, values.matches.version).replace("//", "/");
+                        url = (values.matches.path + "/" + s.filename).replace(s.version, values.matches.version).replace("//", "/");
                     }
                     return { cssClass: "available", url };
 
                 } else {
-                    return { cssClass: "disabled", url: "javascript:void(0);" };
+                    return { cssClass: "disabled", url: values.matches.path + "/not-available" };
                 }
             }
         },
@@ -254,29 +253,17 @@
                 path: "/"
             });
         },
-        specialCasesLookup: function (key, fileName) {
+        specialCasesLookup: function (version, platform) {
             var s = this.settings;
-            var keyPosition = (s.switcher.caseTbl && key in s.switcher.caseTbl['__order']) ? s.switcher.caseTbl['__order'][key] - 1 : -1,
-                fnameParts = fileName.split("."),
-                fnameKey = (fnameParts.length == 2) ? fnameParts[0] : "",
-                fnameVal = "x";
-            //dbg ("specialCasesLookup: " +keyPosition + " " + fnameKey);
+            var filename = s.filename.split(".")[0];
 
+            if (filename in s.switcher.caseTbl) {
+                var c = s.switcher.caseTbl[filename].filter(z => z.version == version && z.platform == platform);
+                return c.length > 0 ? (c[0].available == undefined ? true : false) : false;
 
-            if (keyPosition >= 0) {
-                if (fnameKey in s.switcher.caseTbl) {
-                    fnameVal = s.switcher.caseTbl[fnameKey][keyPosition];
-                    fnameVal = (fnameVal == "x") ? "x" : ((fnameVal == "-") ? fnameKey + ".htm" : fnameVal + ".htm");
-                } else {
-                    fnameVal = fnameKey + ".htm";
-                }
             } else {
-                //not a valid platform choice
-                //fnameVal = "x";
-                fnameVal = fileName;
+                return true;
             }
-
-            return fnameVal;
         },
         t: function (dataLang) {
             var dict = (window.localeJsonObj || {});
