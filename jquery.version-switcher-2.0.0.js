@@ -1,4 +1,4 @@
-(function ($) {
+; (function ($) {
     'use strict'
 
     var vs = $.versionswitcher = {
@@ -94,13 +94,8 @@
             else return "";
         },
         isUrlExcluded: function (s) {
-            var r = false;
-            $.each(s.urlExclusions, function (i) {
-                if (s.currentUrl.match(s.urlExclusions[i])) {
-                    r = true;
-                }
-            });
-            return r;
+            return $.map(s.urlExclusions, function (item) { return s.currentUrl.match(item); }).some(z => z == true);
+
         },
         main: function (data) {
             this.updateSettings(data);
@@ -196,14 +191,14 @@
 
                     $.each(platforms, function (index, platform) {
                         id = version.replace(/[^a-z0-9\s]/gi, '') + platform.id;
-                        targetUrl = self.getTargetUrl({ matches: { platformId: platform.id, path }, version });
+                        targetUrl = self.getTargetUrl({ matches: { platformId: platform.id, path }, version, plaform });
                         menuItems += '<a id="' + id + '" data-plat="' + platform.id +
                             '" class="dropdown-link ' + targetUrl.cssClass + '" data-version="' + version + '" href="' + targetUrl.url + '">' + platform.title + '</a>';
                         versions.push({ id, url: targetUrl.url });
                     });
 
                 } else if (path !== "") {
-                    targetUrl = self.getTargetUrl({ matches: { version, path }, specialCaseId: version });
+                    targetUrl = self.getTargetUrl({ matches: { basepath: "/" + values.basepath, path }, version });
                     menuItems += '<a id="' + id + '" data-plat="' + version
                         + '" class="dropdown-link ' + targetUrl.cssClass + '" data-version="' + version
                         + '" href="' + targetUrl.url + '">' + (values.title != undefined ? values.title : version) + '</a>';
@@ -224,34 +219,30 @@
         },
         getTargetUrl: function (values) {
             var s = this.settings;
-            var r = $.map(values.matches, function (itm) { return ("\/" + itm).replace("//", "/"); });
-            var matched = s.pathName.match(new RegExp(r.join("|"), 'g'));
-
-            if (matched && matched.length == r.length) {
+            if ($.map(values.matches, function (item) { return s.pathName.indexOf(item) >= 0; }).every(z => z == true)) {
                 return { cssClass: "is-active", url: (s.pathName.split("/").slice(0, -1).join("/") + "/" + s.filename).replace("//", "/") };
             }
             else {
+                var url = "javascript:void(0);";
                 if (this.specialCasesLookup(values.version, values.matches.platformId)) {
-                    var url = "";
                     if (values.matches.platformId != undefined) {
-                        url = (s.pathName.split("/").slice(0, -1).join("/") + "/" + s.filename).replace("/" + this.getCurrentLang() + "/"
-                            + s.basepath, values.matches.path).replace(s.platform, values.matches.platformId).replace("//", "/");
+                        url = (s.pathName.split("/").slice(0, -1).join("/") + "/" + s.filename)
+                            .replace("/" + this.getCurrentLang() + "/" + s.basepath, values.matches.path)
+                            .replace(s.platform, values.matches.platformId).replace("//", "/");
                     }
-                    if (values.matches.version != undefined) {
-                        url = (values.matches.path + "/" + s.filename).replace(s.version, values.matches.version).replace("//", "/");
+                    if (values.matches.basepath != undefined) {
+                        url = (s.pathName.split("/").slice(0, -1).join("/") + "/" + s.filename)
+                            .replace(s.switcher.switchercases[s.version].basepath, values.matches.basepath).replace("//", "/");
                     }
                     return { cssClass: "available", url };
 
                 } else {
-                    return { cssClass: "disabled", url: values.matches.path + "/not-available" };
+                    return { cssClass: "disabled", url };
                 }
             }
         },
         setJsCookie: function (k, v) {
-            $.cookie(k, v, {
-                expires: 30,
-                path: "/"
-            });
+            $.cookie(k, v, { expires: 30, path: "/" });
         },
         specialCasesLookup: function (version, platform) {
             var s = this.settings;
