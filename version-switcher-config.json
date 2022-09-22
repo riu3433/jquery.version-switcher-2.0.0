@@ -243,7 +243,7 @@
         },
         {
           "id": "java-linux",
-          "title":  "Java (Linux)"
+          "title": "Java (Linux)"
         }
       ],
       "switchercases": {
@@ -291,6 +291,16 @@
         "10.8": "server/10.8/",
         "10.7": "server/10.7/"
       },
+      "platforms": [
+        {
+          "id": "linux",
+          "title": "Linux"
+        },
+        {
+          "id": "windows",
+          "title": "Windows"
+        }
+      ],
       "switchercases": {
         "11.0": {
           "basepath": "server/latest/",
@@ -371,8 +381,91 @@
           "10.7~linux": 9,
           "10.7~windows": 10
         },
-        "test": [ "-", "test-differentFilename" ],
-        "test2": [ "x", "-" ]
+        "sample": [
+          {
+            "version": "11.0",
+            "platform": "linux"
+          },
+          {
+            "version": "11.0",
+            "platform": "windows"
+          },
+          {
+            "version": "10.9.1",
+            "platform": "linux"
+          },
+          {
+            "version": "10.9.1",
+            "platform": "windows"
+          },
+          {
+            "version": "10.9",
+            "platform": "linux"
+          },
+          {
+            "version": "10.9",
+            "platform": "windows"
+          },
+          {
+            "version": "10.8",
+            "platform": "linux"
+          },
+          {
+            "version": "10.8",
+            "platform": "windows"
+          },
+          {
+            "version": "10.7",
+            "platform": "linux"
+          },
+          {
+            "version": "10.7",
+            "platform": "windows"
+          }
+        ],
+        "sample2": [
+          {
+            "version": "11.0",
+            "platform": "linux",
+            "filename": "sample-filename"
+          },
+          {
+            "version": "11.0",
+            "platform": "windows"
+          },
+          {
+            "version": "10.9.1",
+            "platform": "linux"
+          },
+          {
+            "version": "10.9.1",
+            "platform": "windows"
+          },
+          {
+            "version": "10.9",
+            "platform": "linux"
+          },
+          {
+            "version": "10.9",
+            "platform": "windows"
+          },
+          {
+            "version": "10.8",
+            "platform": "linux"
+          },
+          {
+            "version": "10.8",
+            "platform": "windows"
+          },
+          {
+            "version": "10.7",
+            "platform": "linux"
+          },
+          {
+            "version": "10.7",
+            "platform": "windows"
+          }
+        ]
       },
       "switcherdisplay": true
     }
