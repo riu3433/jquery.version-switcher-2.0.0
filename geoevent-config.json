@@ -1,0 +1,208 @@
+{
+  "switchers": [
+    {
+      "name": "default",
+      "basepaths": {
+        "linux": "linux",
+        "windows": "windows",
+        "11.0": "geoevent/latest/",
+        "10.9.1": "geoevent/10.9.1/",
+        "10.9": "geoevent/10.9/",
+        "10.8": "geoevent/10.8/",
+        "10.7": "geoevent/10.7/"
+      },
+      "platforms": [
+        {
+          "id": "linux",
+          "title": "Linux"
+        },
+        {
+          "id": "windows",
+          "title": "Windows"
+        }
+      ],
+      "switchercases": {
+        "11.0": {
+          "basepath": "geoevent/latest/",
+          "platforms": [
+            {
+              "id": "linux",
+              "title": "Linux"
+            },
+            {
+              "id": "windows",
+              "title": "Windows"
+            }
+          ]
+        },
+        "10.9.1": {
+          "basepath": "geoevent/10.9.1/",
+          "platforms": [
+            {
+              "id": "linux",
+              "title": "Linux"
+            },
+            {
+              "id": "windows",
+              "title": "Windows"
+            }
+          ]
+        },
+        "10.9": {
+          "basepath": "geoevent/10.9/",
+          "platforms": [
+            {
+              "id": "linux",
+              "title": "Linux"
+            },
+            {
+              "id": "windows",
+              "title": "Windows"
+            }
+          ]
+        },
+        "10.8": {
+          "basepath": "geoevent/10.8/",
+          "platforms": [
+            {
+              "id": "linux",
+              "title": "Linux"
+            },
+            {
+              "id": "windows",
+              "title": "Windows"
+            }
+          ],
+          "title": "10.8.x"
+        },
+        "10.7": {
+          "basepath": "geoevent/10.7/",
+          "platforms": [
+            {
+              "id": "linux",
+              "title": "Linux"
+            },
+            {
+              "id": "windows",
+              "title": "Windows"
+            }
+          ],
+          "title": "10.7.x"
+        }
+      },
+      "caseTbl": {
+        "__order": {
+          "11.0~linux": 1,
+          "11.0~windows": 2,
+          "10.9.1~linux": 3,
+          "10.9.1~windows": 4,
+          "10.9~linux": 5,
+          "10.9~windows": 6,
+          "10.8~linux": 7,
+          "10.8~windows": 8,
+          "10.7~linux": 9,
+          "10.7~windows": 10
+        },
+        "installing-arcgis-geoevent-extension-for-server-silently": [
+          {
+            "version": "11.0",
+            "platform": "linux"
+          },
+          {
+            "version": "11.0",
+            "platform": "windows"
+          },
+          {
+            "version": "10.9.1",
+            "platform": "linux"
+          },
+          {
+            "version": "10.9.1",
+            "platform": "windows"
+          },
+          {
+            "version": "10.9",
+            "platform": "linux"
+          },
+          {
+            "version": "10.9",
+            "platform": "windows"
+          },
+          {
+            "version": "10.8",
+            "platform": "linux"
+          },
+          {
+            "version": "10.8",
+            "platform": "windows"
+          },
+          {
+            "version": "10.7",
+            "platform": "linux"
+          },
+          {
+            "version": "10.7",
+            "platform": "windows"
+          }
+        ]
+      },
+      "switcherdisplay": true
+    }
+  ],
+  "versionmapping": {
+    "10.8": "10.8.x",
+    "10.7": "10.7.x"
+  },
+  "versionOptions": [
+    {
+      "isEnglish": true,
+      "pattern": "(\/latest\/)",
+      "version": "11.0"
+    },
+    {
+      "isEnglish": false,
+      "pattern": "(\/latest\/)",
+      "version": "10.9.1"
+    },
+    {
+      "isEnglish": true,
+      "pattern": "(\/10.9.1\/)",
+      "version": "10.9.1"
+    },
+    {
+      "isEnglish": null,
+      "pattern": "(\/10.9\/)",
+      "version": "10.9"
+    },
+    {
+      "isEnglish": null,
+      "pattern": "(\/10.8\/)",
+      "version": "10.8"
+    },
+    {
+      "isEnglish": null,
+      "pattern": "(\/10.7\/)",
+      "version": "10.7"
+    },
+    {
+      "isEnglish": null,
+      "pattern": "(\/10.6\/)",
+      "version": "10.6"
+    },
+    {
+      "isEnglish": null,
+      "pattern": "(\/10.5\/)",
+      "version": "10.5"
+    },
+    {
+      "isEnglish": null,
+      "pattern": "(\/10.4\/)",
+      "version": "10.4"
+    },
+    {
+      "isEnglish": null,
+      "pattern": "default",
+      "version": "10.3"
+    }
+  ]
+}
