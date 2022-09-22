@@ -1,0 +1,231 @@
+{
+  "switchers": [
+    {
+      "name": "(\/install\/database-server\/)",
+      "basepaths": {
+        "10.8": "documentation/install/database-server/10.8/",
+        "10.7": "documentation/install/database-server/10.7/"
+      },
+      "switchercases": {
+        "11.0": "11.0",
+        "10.9.1": "10.9.1",
+        "10.9": "10.9",
+        "10.8": "10.8.x",
+        "10.7": "10.7.x"
+      },
+      "caseTbl": {
+        "__order": {
+          "11.0": "1",
+          "10.9.1": "2",
+          "10.9": 3,
+          "10.8": 4,
+          "10.7": 5
+        }
+      },
+      "switcherdisplay": true
+    },
+    {
+      "name": "(\/notebook\/)",
+      "basepaths": {
+        "linux": "linux",
+        "windows": "windows",
+        "11.0": "notebook/latest/",
+        "10.9.1": "notebook/10.9.1/",
+        "10.9": "notebook/10.9/",
+        "10.8": "notebook/10.8/",
+        "10.7": "notebook/10.7/"
+      },
+      "switchercases": {
+        "11.0~": "11.0",
+        "11.0~linux": "Linux",
+        "11.0~windows": "Windows",
+        "10.9.1~": "10.9.1",
+        "10.9.1~linux": "Linux",
+        "10.9.1~windows": "Windows",
+        "10.9~": "10.9",
+        "10.9~linux": "Linux",
+        "10.9~windows": "Windows",
+        "10.8~": "10.8.x",
+        "10.8~linux": "Linux",
+        "10.8~windows": "Windows",
+        "10.7~": "10.7.x",
+        "10.7~linux": "Linux",
+        "10.7~windows": "Windows"
+      },
+      "caseTbl": {
+        "__order": {
+          "11.0~linux": 1,
+          "11.0~windows": 2,
+          "10.9.1~linux": 3,
+          "10.9.1~windows": 4,
+          "10.9~linux": 5,
+          "10.9~windows": 6,
+          "10.8~linux": 7,
+          "10.8~windows": 8,
+          "10.7~linux": 9,
+          "10.7~windows": 10
+        }
+      },
+      "switcherdisplay": true
+    },
+    {
+      "name": "(\/web-adaptor\/(.*)\/iis\/)",
+      "basepaths": {
+        "iis": "iis",
+        "java-windows": "java-windows",
+        "java-linux": "java-linux",
+        "11.0": "web-adaptor/latest/",
+        "10.9.1": "web-adaptor/10.9.1/",
+        "10.9": "web-adaptor/10.9/",
+        "10.8": "web-adaptor/10.8/",
+        "10.7": "web-adaptor/10.7/"
+      },
+      "switchercases": {
+        "11.0~": "11.0",
+        "11.0~iis": "IIS",
+        "11.0~java-windows": "Java (Windows)",
+        "11.0~java-linux": "Java (Linux)",
+        "10.9.1~": "10.9.1",
+        "10.9.1~iis": "IIS",
+        "10.9.1~java-windows": "Java (Windows)",
+        "10.9.1~java-linux": "Java (Linux)",
+        "10.9~": "10.9",
+        "10.9~iis": "IIS",
+        "10.9~java-windows": "Java (Windows)",
+        "10.9~java-linux": "Java (Linux)",
+        "10.8~": "10.8.x",
+        "10.8~iis": "IIS",
+        "10.8~java-windows": "Java (Windows)",
+        "10.8~java-linux": "Java (Linux)",
+        "10.7~": "10.7.x",
+        "10.7~iis": "IIS",
+        "10.7~java-windows": "Java (Windows)",
+        "10.7~java-linux": "Java (Linux)"
+
+      },
+      "caseTbl": {
+        "__order": {
+          "11.0~iis": 1,
+          "11.0~java-windows": 2,
+          "11.0~java-linux": 3,
+          "10.9.1~iis": 4,
+          "10.9.1~java-windows": 5,
+          "10.9.1~java-linux": 6,
+          "10.9~iis": 7,
+          "10.9~java-windows": 8,
+          "10.9~java-linux": 9,
+          "10.8~iis": 10,
+          "10.8~java-windows": 11,
+          "10.8~java-linux": 12,
+          "10.7~iis": 13,
+          "10.7~java-windows": 14,
+          "10.7~java-linux": 15
+        }
+      },
+      "switcherdisplay": true
+    },
+    {
+      "name": "default",
+      "basepaths": {
+        "linux": "linux",
+        "windows": "windows",
+        "11.0": "server/latest/",
+        "10.9.1": "server/10.9.1/",
+        "10.9": "server/10.9/",
+        "10.8": "server/10.8/",
+        "10.7": "server/10.7/"
+      },
+      "switchercases": {
+        "11.0~": "11.0",
+        "11.0~linux": "Linux",
+        "11.0~windows": "Windows",
+        "10.9.1~": "10.9.1",
+        "10.9.1~linux": "Linux",
+        "10.9.1~windows": "Windows",
+        "10.9~": "10.9",
+        "10.9~linux": "Linux",
+        "10.9~windows": "Windows",
+        "10.8~": "10.8.x",
+        "10.8~linux": "Linux",
+        "10.8~windows": "Windows",
+        "10.7~": "10.7.x",
+        "10.7~linux": "Linux",
+        "10.7~windows": "Windows"
+
+      },
+      "caseTbl": {
+        "__order": {
+          "11.0~linux": 1,
+          "11.0~windows": 2,
+          "10.9.1~linux": 3,
+          "10.9.1~windows": 4,
+          "10.9~linux": 5,
+          "10.9~windows": 6,
+          "10.8~linux": 7,
+          "10.8~windows": 8,
+          "10.7~linux": 9,
+          "10.7~windows": 10
+        },
+        "test": [ "-", "test-differentFilename" ],
+        "test2": [ "x", "-" ]
+      },
+      "switcherdisplay": true
+    }
+  ],
+  "versionmapping": {
+    "10.8": "10.8.x",
+    "10.7": "10.7.x"
+  },
+  "versionOptions": [
+    {
+      "isEnglish": true,
+      "pattern": "(\/latest\/)",
+      "version": "11.0"
+    },
+    {
+      "isEnglish": false,
+      "pattern": "(\/latest\/)",
+      "version": "10.9.1"
+    },
+    {
+      "isEnglish": true,
+      "pattern": "(\/10.9.1\/)",
+      "version": "10.9.1"
+    },
+    {
+      "isEnglish": null,
+      "pattern": "(\/10.9\/)",
+      "version": "10.9"
+    },
+    {
+      "isEnglish": null,
+      "pattern": "(\/10.8\/)",
+      "version": "10.8"
+    },
+    {
+      "isEnglish": null,
+      "pattern": "(\/10.7\/)",
+      "version": "10.7"
+    },
+    {
+      "isEnglish": null,
+      "pattern": "(\/10.6\/)",
+      "version": "10.6"
+    },
+    {
+      "isEnglish": null,
+      "pattern": "(\/10.5\/)",
+      "version": "10.5"
+    },
+    {
+      "isEnglish": null,
+      "pattern": "(\/10.4\/)",
+      "version": "10.4"
+    },
+    {
+      "isEnglish": null,
+      "pattern": "default",
+      "version": "10.3"
+    }
+  ]
+}

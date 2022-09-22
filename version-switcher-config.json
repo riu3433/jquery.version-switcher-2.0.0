@@ -7,20 +7,172 @@
         "10.7": "documentation/install/database-server/10.7/"
       },
       "switchercases": {
-        "11.0": "11.0",
-        "10.9.1": "10.9.1",
-        "10.9": "10.9",
-        "10.8": "10.8.x",
-        "10.7": "10.7.x"
+        "11.0": {
+          "basepath": "server/latest/"
+        },
+        "10.9.1": {
+          "basepath": "server/10.9.1/"
+        },
+        "10.9": {
+          "basepath": "server/10.9/"
+        },
+        "10.8": {
+          "basepath": "documentation/install/database-server/10.8/",
+          "title": "10.8.x"
+        },
+        "10.7": {
+          "basepath": "documentation/install/database-server/10.7/",
+          "title": "10.7.x"
+        }
       },
       "caseTbl": {
         "__order": {
-          "11.0": "1",
-          "10.9.1": "2",
+          "11.0": 1,
+          "10.9.1": 2,
           "10.9": 3,
           "10.8": 4,
           "10.7": 5
         }
+      },
+      "switcherdisplay": true
+    },
+    {
+      "name": "(\/server\/.*\/deploy\/)",
+      "basepaths": {
+        "linux": "linux",
+        "windows": "windows",
+        "11.0": "server/latest/deploy",
+        "10.9.1": "server/10.9.1/deploy",
+        "10.9": "server/10.9/deploy",
+        "10.8": "server/10.8/deploy",
+        "10.7": "server/10.7/deploy"
+      },
+      "platforms": [
+        {
+          "id": "linux",
+          "title": "Linux"
+        },
+        {
+          "id": "windows",
+          "title": "Windows"
+        }
+      ],
+      "switchercases": {
+        "11.0": {
+          "basepath": "server/latest/deploy"
+        },
+        "10.9.1": {
+          "basepath": "server/10.9.1/deploy"
+        },
+        "10.9": {
+          "basepath": "server/10.9/deploy"
+        },
+        "10.8": {
+          "basepath": "server/10.8/deploy"
+        },
+        "10.7": {
+          "basepath": "server/10.7/deploy"
+        }
+      },
+      "caseTbl": {
+        "__order": {
+          "11.0~linux": 1,
+          "11.0~windows": 2,
+          "10.9.1~linux": 3,
+          "10.9.1~windows": 4,
+          "10.9~linux": 5,
+          "10.9~windows": 6,
+          "10.8~linux": 7,
+          "10.8~windows": 8,
+          "10.7~linux": 9,
+          "10.7~windows": 10
+        },
+        "connect-to-arcgis-server-from-arcgis-desktop": [
+          {
+            "version": "11.0",
+            "platform": "linux"
+          },
+          {
+            "version": "11.0",
+            "platform": "windows"
+          },
+          {
+            "version": "10.9.1",
+            "platform": "linux"
+          },
+          {
+            "version": "10.9.1",
+            "platform": "windows"
+          },
+          {
+            "version": "10.9",
+            "platform": "linux"
+          },
+          {
+            "version": "10.9",
+            "platform": "windows"
+          },
+          {
+            "version": "10.8",
+            "platform": "linux"
+          },
+          {
+            "version": "10.8",
+            "platform": "windows"
+          },
+          {
+            "version": "10.7",
+            "platform": "linux"
+          },
+          {
+            "version": "10.7",
+            "platform": "windows"
+          }
+        ],
+        "deploy-arcgis-server": [
+          {
+            "version": "11.0",
+            "platform": "linux"
+          },
+          {
+            "version": "11.0",
+            "platform": "windows"
+          },
+          {
+            "version": "10.9.1",
+            "platform": "linux"
+          },
+          {
+            "version": "10.9.1",
+            "platform": "windows"
+          },
+          {
+            "version": "10.9",
+            "platform": "linux"
+          },
+          {
+            "version": "10.9",
+            "platform": "windows"
+          },
+          {
+            "version": "10.8",
+            "platform": "linux"
+          },
+          {
+            "version": "10.8",
+            "platform": "windows"
+          },
+          {
+            "version": "10.7",
+            "platform": "linux"
+          },
+          {
+            "version": "10.7",
+            "platform": "windows"
+          }
+        ],
+        "connect-to-arcgis-server-from-arcgis-desktopOLD": [ "-", "-", "R", "-", "-", "-", "-", "-", "-", "-", "x", "x", "x", "x", "x", "x" ],
+        "deploy-arcgis-serverOLD": [ "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "x", "x", "x", "x", "x", "x" ]
       },
       "switcherdisplay": true
     },
@@ -69,7 +221,7 @@
       "switcherdisplay": true
     },
     {
-      "name": "(\/web-adaptor\/(.*)\/iis\/)",
+      "name": "(\/web-adaptor\/(.*)\/install\/)",
       "basepaths": {
         "iis": "iis",
         "java-windows": "java-windows",
@@ -80,28 +232,32 @@
         "10.8": "web-adaptor/10.8/",
         "10.7": "web-adaptor/10.7/"
       },
+      "platforms": [
+        {
+          "id": "iis",
+          "title": "IIS"
+        },
+        {
+          "id": "java-windows",
+          "title": "Java (Windows)"
+        },
+        {
+          "id": "java-linux",
+          "title":  "Java (Linux)"
+        }
+      ],
       "switchercases": {
-        "11.0~": "11.0",
-        "11.0~iis": "IIS",
-        "11.0~java-windows": "Java (Windows)",
-        "11.0~java-linux": "Java (Linux)",
-        "10.9.1~": "10.9.1",
-        "10.9.1~iis": "IIS",
-        "10.9.1~java-windows": "Java (Windows)",
-        "10.9.1~java-linux": "Java (Linux)",
-        "10.9~": "10.9",
-        "10.9~iis": "IIS",
-        "10.9~java-windows": "Java (Windows)",
-        "10.9~java-linux": "Java (Linux)",
-        "10.8~": "10.8.x",
-        "10.8~iis": "IIS",
-        "10.8~java-windows": "Java (Windows)",
-        "10.8~java-linux": "Java (Linux)",
-        "10.7~": "10.7.x",
-        "10.7~iis": "IIS",
-        "10.7~java-windows": "Java (Windows)",
-        "10.7~java-linux": "Java (Linux)"
-
+        "11.0": { "basepath": "web-adaptor/latest/" },
+        "10.9.1": { "basepath": "web-adaptor/10.9.1/" },
+        "10.9": { "basepath": "web-adaptor/10.9/" },
+        "10.8": {
+          "basepath": "web-adaptor/10.8/",
+          "title": "10.8.x"
+        },
+        "10.7": {
+          "basepath": "web-adaptor/10.7/",
+          "title": "10.7.x"
+        }
       },
       "caseTbl": {
         "__order": {
@@ -136,22 +292,71 @@
         "10.7": "server/10.7/"
       },
       "switchercases": {
-        "11.0~": "11.0",
-        "11.0~linux": "Linux",
-        "11.0~windows": "Windows",
-        "10.9.1~": "10.9.1",
-        "10.9.1~linux": "Linux",
-        "10.9.1~windows": "Windows",
-        "10.9~": "10.9",
-        "10.9~linux": "Linux",
-        "10.9~windows": "Windows",
-        "10.8~": "10.8.x",
-        "10.8~linux": "Linux",
-        "10.8~windows": "Windows",
-        "10.7~": "10.7.x",
-        "10.7~linux": "Linux",
-        "10.7~windows": "Windows"
-
+        "11.0": {
+          "basepath": "server/latest/",
+          "platforms": [
+            {
+              "id": "linux",
+              "title": "Linux"
+            },
+            {
+              "id": "windows",
+              "title": "Windows"
+            }
+          ]
+        },
+        "10.9.1": {
+          "basepath": "server/10.9.1/",
+          "platforms": [
+            {
+              "id": "linux",
+              "title": "Linux"
+            },
+            {
+              "id": "windows",
+              "title": "Windows"
+            }
+          ]
+        },
+        "10.9": {
+          "basepath": "server/10.9/",
+          "platforms": [
+            {
+              "id": "linux",
+              "title": "Linux"
+            },
+            {
+              "id": "windows",
+              "title": "Windows"
+            }
+          ]
+        },
+        "10.8": {
+          "basepath": "server/10.8/",
+          "platforms": [
+            {
+              "id": "linux",
+              "title": "Linux"
+            },
+            {
+              "id": "windows",
+              "title": "Windows"
+            }
+          ]
+        },
+        "10.7": {
+          "basepath": "server/10.7/",
+          "platforms": [
+            {
+              "id": "linux",
+              "title": "Linux"
+            },
+            {
+              "id": "windows",
+              "title": "Windows"
+            }
+          ]
+        }
       },
       "caseTbl": {
         "__order": {
