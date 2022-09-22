@@ -191,7 +191,7 @@
 
                     $.each(platforms, function (index, platform) {
                         id = version.replace(/[^a-z0-9\s]/gi, '') + platform.id;
-                        targetUrl = self.getTargetUrl({ matches: { platformId: platform.id, path }, version, plaform });
+                        targetUrl = self.getTargetUrl({ matches: { platformId: platform.id, path }, version, platform });
                         menuItems += '<a id="' + id + '" data-plat="' + platform.id +
                             '" class="dropdown-link ' + targetUrl.cssClass + '" data-version="' + version + '" href="' + targetUrl.url + '">' + platform.title + '</a>';
                         versions.push({ id, url: targetUrl.url });
@@ -261,28 +261,7 @@
             return dict[this.getCurrentLang()][dataLang] || dict['en'][dataLang] || dataLang;
         },
         updateTabLinks: function () {
-            var self = this;
-            var s = this.settings;
-
-            $(self.settings.linkUpdateSection + ' a').each(function (i, el) {
-                var href = $(el).attr("href"),
-                    hrefparts = href.split("/"),
-                    linkFileName = (hrefparts[hrefparts.length - 1].indexOf(".htm") > 0) ? hrefparts[hrefparts.length - 1] : "",
-                    linkPlat = hrefparts[hrefparts.length - 2],
-                    ver = self.settings.version + "~" + linkPlat;
-
-                if ((linkPlat != s.platform) && (linkPlat in s.switcher.basepaths && ver in s.switcher.switchercases)) {
-                    var newFname = (linkFileName != "") ? self.specialCasesLookup(s.platform, linkFileName) : "x";
-                    if (newFname != "x") {
-                        var pathpfx = hrefparts.slice(0, -1).join("/"),
-                            newURL = pathpfx.replace(s.switcher.basepaths[linkPlat], s.switcher.basepaths[s.platform]) + "/" + newFname;
-                        $(el).attr("href", newURL);
-
-                    } else if (s.switcher.basepaths[s.platform]) {
-                        $(el).attr("href", href.replace(s.switcher.basepaths[linkPlat], s.switcher.basepaths[s.platform]));
-                    }
-                }
-            });
+            console.log("updateTabLinks: not implemented.")
         },
         bindClickEvents: function () {
             $('.content-section a[data-plat]').on("click", function () {
