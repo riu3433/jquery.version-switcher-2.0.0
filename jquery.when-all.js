@@ -49,4 +49,4 @@
 
         return deferred.promise();
     };
-})(jQuery);
+}(jQuery));
