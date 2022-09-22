@@ -28,6 +28,7 @@
             switcherLinkClass: "current",
             switcherLocation: ".column-13 h1, .column-17 h1, .column-18 h1",
             tertiaryNavIndex: "",
+            templates: {},
             urlExclusions: [/(\/streetmap-premium\/)/],
             version: "",
             versionRetired: {
@@ -46,7 +47,17 @@
                     self.main(data);
 
                 }).fail(function (error) {
-                    console.log("Error reading config file: " + error.statusText);
+                    if (error.status == 200) {
+                        try {
+                            JSON.parse(error.responseText);
+                        } catch (e) {
+                            console.log("Error reading config file: Invalid config file");
+                        }
+                    } else if (error.status == 404) {
+                        console.log("Error reading config file: " + error.statusText);
+                    } else {
+                        console.log("Error occurred reading config file: " + error.status);
+                    }
                 });
 
             } else {
@@ -65,6 +76,7 @@
             this.settings.isHome = pathparts.length <= 4;
             this.settings.platform = pathparts[pathparts.length - 2];
 
+            this.settings.templates = data.templates;
             this.settings.versionMapping = data.versionmapping;
 
             // Retired Version?
@@ -118,13 +130,8 @@
                 var currentPlatTxt = c != undefined ? versionName + ' ' + versionLabel + ' (' + c.title + ')' : versionName + ' ' + versionLabel;
                 var linkData = self.generateSwitcherLinks();
 
-                var links = '<div class="trailer-1" id="platforms">' + '<span class="product text-light-gray">' + currentPlatTxt + '</span>';
-                links += '<span class="divider"> | </span><span class="dropdown js-dropdown dropdown-btn js-dropdown-toggle"><button class="btn btn-transparent" href="#" tabindex="0" aria-haspopup="true" aria-expanded="false"> ' + this.t('other-versions');
-                links += '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 -10 32 40" class="svg-icon padding-left-half"><path d="M28 9v5L16 26 4 14V9l12 12L28 9z"/></svg></button>';
-                links += linkData.menuItems;
-                links += '</span>';
-                links += '<span class="divider">|</span><span>&nbsp;<a href="' + s.archiveUrl + '" tabindex="2" target="_blank"> ' + this.t('help-archive');
-                links += '</a></span></div>';
+                var links = s.templates.dropdownMenu.join("").replace("{{currentPlatformText}}", currentPlatTxt).replace("{{otherVersions}}", this.t('other-versions'))
+                    .replace("{{menuItems}}", linkData.menuItems).replace("{{archiveUrl}}", s.archiveUrl).replace("{{helpArchive}}", this.t('help-archive'));
 
                 var ajaxRequests = $.map(linkData.versions, function (item) { return (item.url === "javascript:void(0);" ? null : $.get(item.url)); });
                 ajaxRequests.push($(s.switcherLocation).after(links));
