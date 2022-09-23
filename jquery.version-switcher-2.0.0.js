@@ -231,7 +231,8 @@
             }
             else {
                 var url = "javascript:void(0);";
-                if (this.specialCasesLookup(values.version, values.matches.platformId)) {
+                var filename = this.specialCasesLookup(values.version, values.matches.platformId);
+                if (filename != null) {
                     if (values.matches.platformId != undefined) {
                         url = (s.pathName.split("/").slice(0, -1).join("/") + "/" + s.filename)
                             .replace("/" + this.getCurrentLang() + "/" + s.basepath, values.matches.path)
@@ -257,10 +258,14 @@
 
             if (filename in s.switcher.caseTbl) {
                 var c = s.switcher.caseTbl[filename].filter(z => z.version == version && z.platform == platform);
-                return c.length > 0 ? (c[0].available == undefined ? true : false) : false;
+
+                return c.length > 0 ? (c[0].filename == undefined ? s.filename :
+                    (c[0].filename.trim() === "" || c[0].filename == null ? null :
+                        c[0].filename.trim() + ".htm")) :
+                    s.filename;
 
             } else {
-                return true;
+                return s.filename;
             }
         },
         t: function (dataLang) {
