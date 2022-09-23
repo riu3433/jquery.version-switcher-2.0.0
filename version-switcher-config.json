@@ -514,7 +514,7 @@
       "switcherdisplay": true
     }
   ],
-  "templates": {
+  "templatesSample": {
     "dropdownMenu": [
       "<div class=\"trailer-1\" id=\"platforms\">",
       "<span class=\"product text-light-gray\">{{currentPlatformText}}</span><span class=\"divider\"> | </span>",
@@ -525,7 +525,10 @@
       "</span>",
       "<span class=\"divider\">|</span><span>&nbsp;<a href=\"{{archiveUrl}}\" tabindex=\"2\" target=\"_blank\"> {{helpArchive}}</a></span>",
       "</div>"
-    ]
+    ],
+    "dropdownTitle": "<span class=\"dropdown-title\">{{dropdownTitle}}</span>",
+    "dropdownLink": "<a id=\"{{elementId}}\" class=\"dropdown-link {{cssClass}}\" data-plat=\"{{dataPlatform}}\" data-version=\"{{dataVersion}}\" href=\"{{url}}\">{{linkText}}</a>",
+    "sample": "This is a sample"
   },
   "versionmapping": {
     "10.8": "10.8.x",

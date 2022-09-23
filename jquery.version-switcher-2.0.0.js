@@ -28,7 +28,21 @@
             switcherLinkClass: "current",
             switcherLocation: ".column-13 h1, .column-17 h1, .column-18 h1",
             tertiaryNavIndex: "",
-            templates: {},
+            templates: {
+                dropdownMenu: [
+                    "<div class=\"trailer-1\" id=\"platforms\">",
+                    "<span class=\"product text-light-gray\">{{currentPlatformText}}</span><span class=\"divider\"> | </span>",
+                    "<span class=\"dropdown js-dropdown dropdown-btn js-dropdown-toggle\">",
+                    "<button class=\"btn btn-transparent\" href=\"#\" tabindex=\"0\" aria-haspopup=\"true\" aria-expanded=\"false\"> {{otherVersions}}",
+                    "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 -10 32 40\" class=\"svg-icon padding-left-half\"><path d=\"M28 9v5L16 26 4 14V9l12 12L28 9z\"/></svg></button>",
+                    "{{menuItems}}",
+                    "</span>",
+                    "<span class=\"divider\">|</span><span>&nbsp;<a href=\"{{archiveUrl}}\" tabindex=\"2\" target=\"_blank\"> {{helpArchive}}</a></span>",
+                    "</div>"
+                ],
+                dropdownTitle: "<span class=\"dropdown-title\">{{dropdownTitle}}</span>",
+                dropdownLink: "<a id=\"{{elementId}}\" class=\"dropdown-link {{cssClass}}\" data-plat=\"{{dataPlatform}}\" data-version=\"{{dataVersion}}\" href=\"{{url}}\">{{linkText}}</a>"
+            },
             urlExclusions: [/(\/streetmap-premium\/)/],
             version: "",
             versionRetired: {
@@ -76,7 +90,7 @@
             this.settings.isHome = pathparts.length <= 4;
             this.settings.platform = pathparts[pathparts.length - 2];
 
-            this.settings.templates = data.templates;
+            this.settings.templates = $.extend(this.settings.templates, data.templates);
             this.settings.versionMapping = data.versionmapping;
 
             // Retired Version?
@@ -194,27 +208,30 @@
                 var targetUrl = {};
 
                 if (platforms != undefined) {
-                    menuItems += '<span class="dropdown-title">' + (values.title != undefined ? values.title : version) + '</span>';
+                    menuItems += s.templates.dropdownTitle.replace("{{dropdownTitle}}", (values.title != undefined ? values.title : version));
 
                     $.each(platforms, function (index, platform) {
                         id = version.replace(/[^a-z0-9\s]/gi, '') + platform.id;
                         targetUrl = self.getTargetUrl({ matches: { platformId: platform.id, path }, version, platform });
-                        menuItems += '<a id="' + id + '" data-plat="' + platform.id +
-                            '" class="dropdown-link ' + targetUrl.cssClass + '" data-version="' + version + '" href="' + targetUrl.url + '">' + platform.title + '</a>';
+                        menuItems += s.templates.dropdownLink.replace("{{elementId}}", id).replace("{{cssClass}}", targetUrl.cssClass)
+                            .replace("{{dataPlatform}}", platform.id).replace("{{dataVersion}}", version)
+                            .relace("{{url}}", targetUrl.url).replace("{{linkText}}", platform.title);
+
                         versions.push({ id, url: targetUrl.url });
                     });
 
                 } else if (path !== "") {
                     targetUrl = self.getTargetUrl({ matches: { basepath: "/" + values.basepath, path }, version });
-                    menuItems += '<a id="' + id + '" data-plat="' + version
-                        + '" class="dropdown-link ' + targetUrl.cssClass + '" data-version="' + version
-                        + '" href="' + targetUrl.url + '">' + (values.title != undefined ? values.title : version) + '</a>';
+                    menuItems += s.templates.dropdownLink.replace("{{elementId}}", id).replace("{{cssClass}}", targetUrl.cssClass)
+                        .replace("{{dataPlatform}}", version).replace("{{dataVersion}}", version)
+                        .relace("{{url}}", targetUrl.url).replace("{{linkText}}", (values.title != undefined ? values.title : version));
 
                     versions.push({ id, url: targetUrl.url });
 
                 } else if ($.isEmptyObject(values)) {
-                    menuItems += '<a id="' + id + '" data-plat="' + version + '" class="dropdown-link disabled" data-version="' + version
-                        + '" href="javascript:void(0);">' + version + '</a>';
+                    menuItems += s.templates.dropdownLink.replace("{{elementId}}", id).replace("{{cssClass}}", "disabled")
+                        .replace("{{dataPlatform}}", version).replace("{{dataVersion}}", version)
+                        .relace("{{url}}", "javascript:void(0);").replace("{{linkText}}", version);
                 }
             });
             menuItems += '</nav>'
@@ -258,11 +275,7 @@
 
             if (filename in s.switcher.caseTbl) {
                 var c = s.switcher.caseTbl[filename].filter(z => z.version == version && z.platform == platform);
-
-                return c.length > 0 ? (c[0].filename == undefined ? s.filename :
-                    (c[0].filename.trim() === "" || c[0].filename == null ? null :
-                        c[0].filename.trim() + ".htm")) :
-                    s.filename;
+                return c.length > 0 ? (c[0].filename == undefined ? s.filename : (c[0].filename.trim() === "" || c[0].filename == null ? null : c[0].filename.trim() + ".htm")) : s.filename;
 
             } else {
                 return s.filename;
