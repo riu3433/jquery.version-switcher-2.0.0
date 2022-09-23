@@ -40,8 +40,9 @@
                     "<span class=\"divider\">|</span><span>&nbsp;<a href=\"{{archiveUrl}}\" tabindex=\"2\" target=\"_blank\"> {{helpArchive}}</a></span>",
                     "</div>"
                 ],
-                dropdownTitle: "<span class=\"dropdown-title\">{{dropdownTitle}}</span>",
-                dropdownLink: "<a id=\"{{elementId}}\" class=\"dropdown-link {{cssClass}}\" data-plat=\"{{dataPlatform}}\" data-version=\"{{dataVersion}}\" href=\"{{url}}\">{{linkText}}</a>"
+                dropdownMenuItemWrapper: "<nav class=\"dropdown-menu\">",
+                dropdownMenuItemTitle: "<span class=\"dropdown-title\">{{dropdownTitle}}</span>",
+                dropdownMenuItemLink: "<a id=\"{{elementId}}\" class=\"dropdown-link {{cssClass}}\" data-plat=\"{{dataPlatform}}\" data-version=\"{{dataVersion}}\" href=\"{{url}}\">{{linkText}}</a>",
             },
             urlExclusions: [/(\/streetmap-premium\/)/],
             version: "",
@@ -208,30 +209,30 @@
                 var targetUrl = {};
 
                 if (platforms != undefined) {
-                    menuItems += s.templates.dropdownTitle.replace("{{dropdownTitle}}", (values.title != undefined ? values.title : version));
+                    menuItems += s.templates.dropdownMenuItemTitle.replace("{{dropdownTitle}}", (values.title != undefined ? values.title : version));
 
                     $.each(platforms, function (index, platform) {
                         id = version.replace(/[^a-z0-9\s]/gi, '') + platform.id;
                         targetUrl = self.getTargetUrl({ matches: { platformId: platform.id, path }, version, platform });
-                        menuItems += s.templates.dropdownLink.replace("{{elementId}}", id).replace("{{cssClass}}", targetUrl.cssClass)
+                        menuItems += s.templates.dropdownMenuItemLink.replace("{{elementId}}", id).replace("{{cssClass}}", targetUrl.cssClass)
                             .replace("{{dataPlatform}}", platform.id).replace("{{dataVersion}}", version)
-                            .relace("{{url}}", targetUrl.url).replace("{{linkText}}", platform.title);
+                            .replace("{{url}}", targetUrl.url).replace("{{linkText}}", platform.title);
 
                         versions.push({ id, url: targetUrl.url });
                     });
 
                 } else if (path !== "") {
                     targetUrl = self.getTargetUrl({ matches: { basepath: "/" + values.basepath, path }, version });
-                    menuItems += s.templates.dropdownLink.replace("{{elementId}}", id).replace("{{cssClass}}", targetUrl.cssClass)
+                    menuItems += s.templates.dropdownMenuItemLink.replace("{{elementId}}", id).replace("{{cssClass}}", targetUrl.cssClass)
                         .replace("{{dataPlatform}}", version).replace("{{dataVersion}}", version)
-                        .relace("{{url}}", targetUrl.url).replace("{{linkText}}", (values.title != undefined ? values.title : version));
+                        .replace("{{url}}", targetUrl.url).replace("{{linkText}}", (values.title != undefined ? values.title : version));
 
                     versions.push({ id, url: targetUrl.url });
 
                 } else if ($.isEmptyObject(values)) {
-                    menuItems += s.templates.dropdownLink.replace("{{elementId}}", id).replace("{{cssClass}}", "disabled")
+                    menuItems += s.templates.dropdownMenuItemLink.replace("{{elementId}}", id).replace("{{cssClass}}", "disabled")
                         .replace("{{dataPlatform}}", version).replace("{{dataVersion}}", version)
-                        .relace("{{url}}", "javascript:void(0);").replace("{{linkText}}", version);
+                        .replace("{{url}}", "javascript:void(0);").replace("{{linkText}}", version);
                 }
             });
             menuItems += '</nav>'
