@@ -20,6 +20,7 @@
             locale: "en",
             localeDir: "en",
             pathName: window.location.pathname,
+            pathPattern: {},
             platform: "",
             relativeUrl: false,
             searchFormUrl: "/search/",
@@ -64,16 +65,22 @@
             }
         },
         updateSettings: function (data) {
+            var self = this;
             this.settings.switcher = this.getSwitcher(data.switchers, this.settings.currentUrl);
             this.settings.isEnglish = this.settings.currentUrl.match(/(\/en\/)/) != null;
             this.settings.version = this.getVersion(data.versionOptions, this.settings.isEnglish, this.settings.pathName);
 
-            this.settings.basepath = this.getBasepath();
+            //this.settings.basepath = this.getBasepath();
 
+            //this.settings.pathPattern = this.settings.pathPattern;
             var pathparts = this.settings.pathName.split("/");
             this.settings.filename = pathparts[pathparts.length - 1];
             this.settings.isHome = pathparts.length <= 4;
             this.settings.platform = pathparts[pathparts.length - 2];
+
+            $.each(pathparts.slice(1), function (i, val) {
+                self.settings.switcher.path.components.filter(z => z.index == i)[0].value = val;
+            });
 
             this.settings.templates = $.extend(this.settings.templates, data.templates);
             this.settings.versionMapping = data.versionmapping;
@@ -121,7 +128,7 @@
             var s = this.settings;
 
             if (!(s.isHome) && (s.switcher.switcherdisplay)) {
-                var c = s.switcher.switchercases[s.version].platforms != undefined ? s.switcher.switchercases[s.version].platforms.filter(z => z.id == s.platform)[0] :
+                var c = s.switcher.versions[s.version].platforms != undefined ? s.switcher.switchercases[s.version].platforms.filter(z => z.id == s.platform)[0] :
                     s.switcher.platforms != undefined ? s.switcher.platforms.filter(z => z.id == s.platform)[0] : undefined;
 
                 var versionLabel = (s.customVersionLabel) ? s.customVersionLabel : (s.version in s.versionMapping) ? s.versionMapping[s.version] : s.version;
@@ -193,20 +200,21 @@
             var menuItems = '<nav class="dropdown-menu">',
                 self = this,
                 s = this.settings,
+                absolutePath = s.switcher.path.components != undefined ? "/" + $.map(s.switcher.path.components, function (obj) { return obj.value; }).join("/") : "",
                 versions = [];
 
-            $.each(s.switcher.switchercases, function (version, values) {
+            $.each(s.switcher.versions, function (version, obj) {
                 var id = version.replace(/[^a-z0-9\s]/gi, '');
-                var path = values.basepath != undefined ? "/" + self.getCurrentLang() + "/" + values.basepath : "";
-                var platforms = values.platforms != undefined ? values.platforms : s.switcher.platforms;
+                var path = obj.basepath != undefined ? "/" + self.getCurrentLang() + "/" + obj.basepath : "";
+                var platforms = obj.platforms != undefined ? obj.platforms : s.switcher.platforms;
                 var targetUrl = {};
 
                 if (platforms != undefined) {
-                    menuItems += '<span class="dropdown-title">' + (values.title != undefined ? values.title : version) + '</span>';
+                    menuItems += '<span class="dropdown-title">' + (obj.title != undefined ? obj.title : version) + '</span>';
 
                     $.each(platforms, function (index, platform) {
                         id = version.replace(/[^a-z0-9\s]/gi, '') + platform.id;
-                        targetUrl = self.getTargetUrl({ matches: { platformId: platform.id, path }, version, platform });
+                        targetUrl = self.getTargetUrl({ matches: { absolutePath, path, platformId: platform.id }, version, platform });
                         menuItems += '<a id="' + id + '" class="dropdown-link ' + targetUrl.cssClass + '" data-plat="' + platform.id + '" data-version="' + version
                             + '" href="' + targetUrl.url + '">' + platform.title + '</a>';
 
@@ -214,15 +222,15 @@
                     });
 
                 } else if (path !== "") {
-                    targetUrl = self.getTargetUrl({ matches: { basepath: "/" + values.basepath, path }, version });
-                    menuItems += '<a id="' + id + '" class="dropdown-link ' + targetUrl.cssClass + '" data-plat="' + version + '" data-version="' + version
-                        + '" href="' + targetUrl.url + '">' + (values.title != undefined ? values.title : version) + '</a>';
+                    //targetUrl = self.getTargetUrl({ matches: { basepath: "/" + values.basepath, path }, version });
+                    //menuItems += '<a id="' + id + '" class="dropdown-link ' + targetUrl.cssClass + '" data-plat="' + version + '" data-version="' + version
+                    //    + '" href="' + targetUrl.url + '">' + (values.title != undefined ? values.title : version) + '</a>';
 
-                    versions.push({ id, url: targetUrl.url });
+                    //versions.push({ id, url: targetUrl.url });
 
                 } else if ($.isEmptyObject(values)) {
-                    menuItems += '<a id="' + id + '" class="dropdown-link disabled" data-plat="' + version + '" data-version="' + version
-                        + '" href="javascript:void(0);">' + version + '</a>';
+                    //menuItems += '<a id="' + id + '" class="dropdown-link disabled" data-plat="' + version + '" data-version="' + version
+                    //    + '" href="javascript:void(0);">' + version + '</a>';
                 }
             });
             menuItems += '</nav>'
@@ -234,22 +242,17 @@
         },
         getTargetUrl: function (values) {
             var s = this.settings;
+
             if ($.map(values.matches, function (item) { return s.pathName.indexOf(item) >= 0; }).every(z => z == true)) {
-                return { cssClass: "is-active", url: (s.pathName.split("/").slice(0, -1).join("/") + "/" + s.filename).replace("//", "/") };
+                return { cssClass: "is-active", url: values.matches.absolutePath };
+
             }
             else {
                 var url = "javascript:void(0);";
                 var filename = this.specialCasesLookup(values.version, values.matches.platformId);
                 if (filename != null) {
-                    if (values.matches.platformId != undefined) {
-                        url = (s.pathName.split("/").slice(0, -1).join("/") + "/" + s.filename)
-                            .replace("/" + this.getCurrentLang() + "/" + s.basepath, values.matches.path)
-                            .replace(s.platform, values.matches.platformId).replace("//", "/");
-                    }
-                    if (values.matches.basepath != undefined) {
-                        url = (s.pathName.split("/").slice(0, -1).join("/") + "/" + s.filename)
-                            .replace(s.switcher.switchercases[s.version].basepath, values.matches.basepath).replace("//", "/");
-                    }
+                    url = values.matches.absolutePath.replace("/" + this.getCurrentLang() + "/" + s.switcher.versions[s.version].basepath, values.matches.path)
+                        .replace(s.filename, filename);
                     return { cssClass: "available", url };
 
                 } else {
