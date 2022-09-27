@@ -19,7 +19,6 @@
             locale: "en",
             localeDir: "en",
             pathName: window.location.pathname,
-            pathPattern: {},
             platform: "",
             relativeUrl: false,
             searchFormUrl: "/search/",
