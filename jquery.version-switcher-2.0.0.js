@@ -5,7 +5,6 @@
         version: '2.0.0',
         defaults: {
             archiveUrl: "https://resources.arcgis.com/en/help/",
-            basepath: "",
             currentUrl: document.location.href,
             customVersionLabel: "",
             customVersionName: "ArcGIS",
@@ -70,17 +69,11 @@
             this.settings.isEnglish = this.settings.currentUrl.match(/(\/en\/)/) != null;
             this.settings.version = this.getVersion(data.versionOptions, this.settings.isEnglish, this.settings.pathName);
 
-            //this.settings.basepath = this.getBasepath();
-
-            //this.settings.pathPattern = this.settings.pathPattern;
             var pathparts = this.settings.pathName.split("/");
             this.settings.filename = pathparts[pathparts.length - 1];
             this.settings.isHome = pathparts.length <= 4;
             this.settings.platform = pathparts[pathparts.length - 2];
-
-            $.each(pathparts.slice(1), function (i, val) {
-                self.settings.switcher.path.components.filter(z => z.index == i)[0].value = val;
-            });
+            this.settings.switcher.path.components = this.setPathComponents();
 
             this.settings.templates = $.extend(this.settings.templates, data.templates);
             this.settings.versionMapping = data.versionmapping;
@@ -89,11 +82,6 @@
             this.settings.isRetired = this.settings.pathName.match(this.settings.versionRetired.pattern) != null;
             this.settings.switcher.switcherdisplay = !this.settings.isRetired;
             this.settings.fallbackTopic = "/{0}/documentation/".format(this.settings.localeDir.toLowerCase());
-        },
-        getBasepath: function () {
-            return this.settings.switcher.switchercases[this.settings.version].basepath != undefined ?
-                this.settings.switcher.switchercases[this.settings.version].basepath :
-                this.settings.switcher.basepaths[this.settings.version]
         },
         getSwitcher: function (o, u) {
             var s = o.filter(z => u.match(z.name));
@@ -111,9 +99,29 @@
             if (d.length > 0) return d[0].version;
             else return "";
         },
+        isEmpty: function (o) {
+            if ($.isEmptyObject(o)) {
+                return true;
+            } else {
+                var p = Object.keys(o);
+
+                if (p.length < 1) {
+                    return true;
+                } else if ($.map(p, function (q) { return o[q] == null || o[q] == "" }).every(z => z == true)) {
+                    return true;
+                }
+            }
+            return false;
+        },
         isUrlExcluded: function (s) {
             return $.map(s.urlExclusions, function (item) { return s.currentUrl.match(item); }).some(z => z == true);
 
+        },
+        setPathComponents: function () {
+            var c = this.settings.switcher.path.format.split("/");
+            var p = this.settings.pathName.split("/").slice(1);
+
+            return $.map(p, function (v, i) { return { index: i, name: c[i].replace(/\{\{(.*?)\}\}/g, "$1"), value: v }; });
         },
         main: function (data) {
             this.updateSettings(data);
@@ -128,8 +136,8 @@
             var s = this.settings;
 
             if (!(s.isHome) && (s.switcher.switcherdisplay)) {
-                var c = s.switcher.versions[s.version].platforms != undefined ? s.switcher.switchercases[s.version].platforms.filter(z => z.id == s.platform)[0] :
-                    s.switcher.platforms != undefined ? s.switcher.platforms.filter(z => z.id == s.platform)[0] : undefined;
+                var c = s.switcher.versions[s.version].platforms != undefined ? s.switcher.version[s.version].platforms.filter(z => z.id == s.platform)[0] :
+                    s.switcher.platforms != undefined && s.switcher.platforms.length > 0 ? s.switcher.platforms.filter(z => z.id == s.platform)[0] : undefined;
 
                 var versionLabel = (s.customVersionLabel) ? s.customVersionLabel : (s.version in s.versionMapping) ? s.versionMapping[s.version] : s.version;
                 var versionName = (typeof s.customVersionName !== 'undefined') ? s.customVersionName : 'ArcGIS';
@@ -205,11 +213,11 @@
 
             $.each(s.switcher.versions, function (version, obj) {
                 var id = version.replace(/[^a-z0-9\s]/gi, '');
-                var path = obj.basepath != undefined ? "/" + self.getCurrentLang() + "/" + obj.basepath : "";
-                var platforms = obj.platforms != undefined ? obj.platforms : s.switcher.platforms;
+                var path = obj.basepath != undefined && obj.basepath != null && obj.basepath !== "" ? "/" + self.getCurrentLang() + "/" + obj.basepath : "";
+                var platforms = obj.platforms != undefined && $.isEmptyObject(obj.platforms) && obj.platforms != null ? obj.platforms : s.switcher.platforms;
                 var targetUrl = {};
 
-                if (platforms != undefined) {
+                if (platforms != undefined && platforms.length > 0 && $.isEmptyObject(obj.platforms) && obj.platforms != null) {
                     menuItems += '<span class="dropdown-title">' + (obj.title != undefined ? obj.title : version) + '</span>';
 
                     $.each(platforms, function (index, platform) {
@@ -222,15 +230,15 @@
                     });
 
                 } else if (path !== "") {
-                    //targetUrl = self.getTargetUrl({ matches: { basepath: "/" + values.basepath, path }, version });
-                    //menuItems += '<a id="' + id + '" class="dropdown-link ' + targetUrl.cssClass + '" data-plat="' + version + '" data-version="' + version
-                    //    + '" href="' + targetUrl.url + '">' + (values.title != undefined ? values.title : version) + '</a>';
+                    targetUrl = self.getTargetUrl({ matches: { absolutePath, path }, version });
+                    menuItems += '<a id="' + id + '" class="dropdown-link ' + targetUrl.cssClass + '" data-plat="' + version + '" data-version="' + version
+                        + '" href="' + targetUrl.url + '">' + (obj.title != undefined ? obj.title : version) + '</a>';
 
-                    //versions.push({ id, url: targetUrl.url });
+                    versions.push({ id, url: targetUrl.url });
 
-                } else if ($.isEmptyObject(values)) {
-                    //menuItems += '<a id="' + id + '" class="dropdown-link disabled" data-plat="' + version + '" data-version="' + version
-                    //    + '" href="javascript:void(0);">' + version + '</a>';
+                } else if (self.isEmpty(obj)) {
+                    menuItems += '<a id="' + id + '" class="dropdown-link disabled" data-plat="' + version + '" data-version="' + version
+                        + '" href="javascript:void(0);">' + version + '</a>';
                 }
             });
             menuItems += '</nav>'
@@ -249,7 +257,7 @@
             }
             else {
                 var url = "javascript:void(0);";
-                var filename = this.specialCasesLookup(values.version, values.matches.platformId);
+                var filename = this.checkExceptionLists(values.version, values.matches.platformId);
                 if (filename != null) {
                     url = values.matches.absolutePath.replace("/" + this.getCurrentLang() + "/" + s.switcher.versions[s.version].basepath, values.matches.path)
                         .replace(s.filename, filename);
@@ -263,12 +271,12 @@
         setJsCookie: function (k, v) {
             $.cookie(k, v, { expires: 30, path: "/" });
         },
-        specialCasesLookup: function (version, platform) {
+        checkExceptionLists: function (version, platform) {
             var s = this.settings;
             var filename = s.filename.split(".")[0];
 
-            if (filename in s.switcher.caseTbl) {
-                var c = s.switcher.caseTbl[filename].filter(z => z.version == version && z.platform == platform);
+            if (filename in s.switcher.exceptions) {
+                var c = s.switcher.exceptions[filename].filter(z => z.version == version && z.platform == platform);
                 return c.length > 0 ? (c[0].filename == undefined ? s.filename : (c[0].filename.trim() === "" || c[0].filename == null ? null : c[0].filename.trim() + ".htm")) : s.filename;
 
             } else {
