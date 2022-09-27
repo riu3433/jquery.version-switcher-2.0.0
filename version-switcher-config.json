@@ -6,7 +6,7 @@
         "__description": "path has a property: format - is used as template to determine the final URL Path.",
         "format": "{{language}}/{{site}}/{{section}}/{{section}}/{{version}}/{{filename}}"
       },
-      "platforms": [],
+      "platforms": {},
       "switcherdisplay": true,
       "versions": {
         "11.0": {
@@ -42,7 +42,7 @@
         "__description": "path has a property: format - is used as template to determine the final URL Path.",
         "format": "{{language}}/{{site}}/{{version}}/{{section}}/{{filename}}"
       },
-      "platform": {},
+      "platforms": {},
       "switcherdisplay": true,
       "versions": {
         "11.0": {
@@ -84,16 +84,14 @@
         "__description": "path has a property: format - is used as template to determine the final URL Path.",
         "format": "{{language}}/{{site}}/{{version}}/{{section}}/{{platform}}/{{filename}}"
       },
-      "platforms": [
-        {
-          "id": "linux",
+      "platforms": {
+        "linux": {
           "title": "Linux"
         },
-        {
-          "id": "windows",
+        "windows": {
           "title": "Windows"
         }
-      ],
+      },
       "switcherdisplay": true,
       "versions": {
         "11.0": {
@@ -219,20 +217,17 @@
         "__description": "path has a property: format - is used as template to determine the final URL Path.",
         "format": "{{language}}/{{site}}/{{version}}/{{section}}/{{platform}}/{{filename}}"
       },
-      "platforms": [
-        {
-          "id": "iis",
+      "platforms": {
+        "iis": {
           "title": "IIS"
         },
-        {
-          "id": "java-windows",
+        "java-windows": {
           "title": "Java (Windows)"
         },
-        {
-          "id": "java-linux",
+        "java-linux": {
           "title": "Java (Linux)"
         }
-      ],
+      },
       "switcherdisplay": true,
       "versions": {
         "11.0": {
@@ -279,16 +274,14 @@
         "__description": "path has a property: format - is used as template to determine the final URL Path.",
         "format": "{{language}}/{{site}}/{{version}}/{{section}}/{{platform}}/{{filename}}"
       },
-      "platforms": [
-        {
-          "id": "windows",
-          "title": "Windows"
-        },
-        {
-          "id": "linux",
+      "platforms": {
+        "linux": {
           "title": "Linux"
+        },
+        "windows": {
+          "title": "Windows"
         }
-      ],
+      },
       "switcherdisplay": true,
       "versions": {
         "11.0": {
@@ -328,16 +321,14 @@
         "__description": "path has a property: format - is used as template to determine the final URL Path.",
         "format": "correct sequence is required."
       },
-      "platforms": [
-        {
-          "id": "linux",
+      "platforms": {
+        "linux": {
           "title": "Linux"
         },
-        {
-          "id": "windows",
+        "windows": {
           "title": "Windows"
         }
-      ],
+      },
       "switcherdisplay": true,
       "versions": {
         "11.0": {
@@ -474,7 +465,7 @@
     "dropdownMenuItemLink": "<a id=\"{{elementId}}\" class=\"dropdown-link {{cssClass}}\" data-plat=\"{{dataPlatform}}\" data-version=\"{{dataVersion}}\" href=\"{{url}}\">{{linkText}}</a>",
     "sample": "This is a sample"
   },
-  "versionmapping": {
+  "versionMapping": {
     "10.8": "10.8.x",
     "10.7": "10.7.x"
   },

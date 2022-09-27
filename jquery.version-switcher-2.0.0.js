@@ -75,7 +75,7 @@
             this.settings.switcher.path.components = this.setPathComponents();
 
             this.settings.templates = $.extend(this.settings.templates, data.templates);
-            this.settings.versionMapping = data.versionmapping;
+            this.settings.versionMapping = data.versionMapping;
 
             // Retired Version?
             this.settings.isRetired = this.settings.pathName.match(this.settings.versionRetired.pattern) != null;
@@ -135,11 +135,11 @@
             var s = this.settings;
 
             if (!(s.isHome) && (s.switcher.switcherdisplay)) {
-                var c = s.switcher.versions[s.version].platforms != undefined ? s.switcher.version[s.version].platforms.filter(z => z.id == s.platform)[0] :
-                    s.switcher.platforms != undefined && s.switcher.platforms.length > 0 ? s.switcher.platforms.filter(z => z.id == s.platform)[0] : undefined;
+                var c = s.switcher.versions[s.version].platforms != undefined ? s.switcher.version[s.version].platforms[s.platform] :
+                    s.switcher.platforms != undefined ? s.switcher.platforms[s.platform] : undefined;
 
                 var versionLabel = (s.customVersionLabel) ? s.customVersionLabel : (s.version in s.versionMapping) ? s.versionMapping[s.version] : s.version;
-                var versionName = (typeof s.customVersionName !== 'undefined') ? s.customVersionName : 'ArcGIS';
+                var versionName = (s.customVersionName != undefined) ? s.customVersionName : 'ArcGIS';
                 var currentPlatTxt = c != undefined ? versionName + ' ' + versionLabel + ' (' + c.title + ')' : versionName + ' ' + versionLabel;
                 var linkData = self.generateSwitcherLinks();
 
@@ -178,6 +178,18 @@
 
             return this; // make the function chainable
         },
+        checkExceptionList: function (version, platform) {
+            var s = this.settings;
+            var filename = s.filename.split(".")[0];
+
+            if (filename in s.switcher.exceptions) {
+                var c = s.switcher.exceptions[filename].filter(z => z.version == version && z.platform == platform);
+                return c.length > 0 ? (c[0].filename == undefined ? s.filename : (c[0].filename.trim() === "" || c[0].filename == null ? null : c[0].filename.trim() + ".htm")) : s.filename;
+
+            } else {
+                return s.filename;
+            }
+        },
         checkLatestUrl: function () {
             var s = this.settings;
             var latestUrls = $.map(s.fallbackLatestVersions, function (item) { return $.get(s.pathName.replace(s.version, item)); });
@@ -213,16 +225,16 @@
             $.each(s.switcher.versions, function (version, obj) {
                 var id = version.replace(/[^a-z0-9\s]/gi, '');
                 var path = obj.basepath != undefined && obj.basepath != null && obj.basepath !== "" ? "/" + self.getCurrentLang() + "/" + obj.basepath : "";
-                var platforms = obj.platforms != undefined && $.isEmptyObject(obj.platforms) && obj.platforms != null ? obj.platforms : s.switcher.platforms;
+                var platforms = obj.platforms != undefined && !$.isEmptyObject(obj.platforms) && obj.platforms != null ? obj.platforms : s.switcher.platforms;
                 var targetUrl = {};
 
-                if (platforms != undefined && platforms.length > 0 && $.isEmptyObject(obj.platforms) && obj.platforms != null) {
+                if (platforms != undefined && !$.isEmptyObject(platforms) && platforms != null) {
                     menuItems += '<span class="dropdown-title">' + (obj.title != undefined ? obj.title : version) + '</span>';
 
-                    $.each(platforms, function (index, platform) {
-                        id = version.replace(/[^a-z0-9\s]/gi, '') + platform.id;
-                        targetUrl = self.getTargetUrl({ matches: { absolutePath, path, platformId: platform.id }, version, platform });
-                        menuItems += '<a id="' + id + '" class="dropdown-link ' + targetUrl.cssClass + '" data-plat="' + platform.id + '" data-version="' + version
+                    $.each(platforms, function (platformId, platform) {
+                        id = version.replace(/[^a-z0-9\s]/gi, '') + platformId;
+                        targetUrl = self.getTargetUrl({ matches: { absolutePath, path, platformId }, version });
+                        menuItems += '<a id="' + id + '" class="dropdown-link ' + targetUrl.cssClass + '" data-plat="' + platformId + '" data-version="' + version
                             + '" href="' + targetUrl.url + '">' + platform.title + '</a>';
 
                         versions.push({ id, url: targetUrl.url });
@@ -256,10 +268,14 @@
             }
             else {
                 var url = "javascript:void(0);";
-                var filename = this.checkExceptionLists(values.version, values.matches.platformId);
+                var filename = this.checkExceptionList(values.version, values.matches.platformId);
                 if (filename != null) {
                     url = values.matches.absolutePath.replace("/" + this.getCurrentLang() + "/" + s.switcher.versions[s.version].basepath, values.matches.path)
                         .replace(s.filename, filename);
+
+                    if (values.matches.platformId != undefined) {
+                        url = url.replace(s.platform, values.matches.platformId);
+                    }
                     return { cssClass: "available", url };
 
                 } else {
@@ -269,18 +285,6 @@
         },
         setJsCookie: function (k, v) {
             $.cookie(k, v, { expires: 30, path: "/" });
-        },
-        checkExceptionLists: function (version, platform) {
-            var s = this.settings;
-            var filename = s.filename.split(".")[0];
-
-            if (filename in s.switcher.exceptions) {
-                var c = s.switcher.exceptions[filename].filter(z => z.version == version && z.platform == platform);
-                return c.length > 0 ? (c[0].filename == undefined ? s.filename : (c[0].filename.trim() === "" || c[0].filename == null ? null : c[0].filename.trim() + ".htm")) : s.filename;
-
-            } else {
-                return s.filename;
-            }
         },
         t: function (dataLang) {
             var dict = (window.localeJsonObj || {});
