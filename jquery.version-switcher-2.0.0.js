@@ -212,12 +212,13 @@
 
             $.each(s.switcher.versions, function (version, obj) {
                 var id = version.replace(/[^a-z0-9\s]/gi, '');
+                var menuItemTitle = s.versionMapping[version] != undefined ? s.versionMapping[version] : obj.title != undefined ? obj.title : version;
                 var path = obj.basepath != undefined && !self._isObjectEmptyOrNull(obj.basepath) ? "/" + self.getCurrentLang() + "/" + obj.basepath : "";
                 var platforms = obj.platforms != undefined && !self._isObjectEmptyOrNull(obj.platforms) != null ? obj.platforms : s.switcher.platforms;
                 var targetUrl = {};
 
                 if (platforms != undefined && !self._isObjectEmptyOrNull(platforms)) {
-                    menuItems += '<span class="dropdown-title">' + (obj.title != undefined ? obj.title : version) + '</span>';
+                    menuItems += '<span class="dropdown-title">' + menuItemTitle + '</span>';
 
                     $.each(platforms, function (platformId, platform) {
                         id = version.replace(/[^a-z0-9\s]/gi, '') + platformId;
@@ -231,7 +232,7 @@
                 } else if (!self._isStringEmptyOrNull(path)) {
                     targetUrl = self.getTargetUrl({ matches: { absolutePath, path }, version });
                     menuItems += '<a id="' + id + '" class="dropdown-link ' + targetUrl.cssClass + '" data-plat="' + version + '" data-version="' + version
-                        + '" href="' + targetUrl.url + '">' + (obj.title != undefined ? obj.title : version) + '</a>';
+                        + '" href="' + targetUrl.url + '">' + menuItemTitle + '</a>';
 
                     versions.push({ id, url: targetUrl.url });
 

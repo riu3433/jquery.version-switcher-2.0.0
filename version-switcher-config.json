@@ -55,12 +55,10 @@
           "basepath": "geoevent/10.9/"
         },
         "10.8": {
-          "basepath": "geoevent/10.8/",
-          "title": "10.8.x"
+          "basepath": "geoevent/10.8/"
         },
         "10.7": {
-          "basepath": "geoevent/10.7/",
-          "title": "10.7.x"
+          "basepath": "geoevent/10.7/"
         }
       },
       "exceptions": {
@@ -289,12 +287,10 @@
           "basepath": "web-adaptor/10.9"
         },
         "10.8": {
-          "basepath": "web-adaptor/10.8",
-          "title": "10.8.x"
+          "basepath": "web-adaptor/10.8"
         },
         "10.7": {
-          "basepath": "web-adaptor/10.7",
-          "title": "10.7.x"
+          "basepath": "web-adaptor/10.7"
         }
       },
       "exceptions": {
