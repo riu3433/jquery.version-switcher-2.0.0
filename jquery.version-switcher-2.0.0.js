@@ -81,6 +81,8 @@
             this.settings.isRetired = this.settings.pathName.match(this.settings.versionRetired.pattern) != null;
             this.settings.switcher.switcherdisplay = !this.settings.isRetired;
             this.settings.fallbackTopic = "/{0}/documentation/".format(this.settings.localeDir.toLowerCase());
+
+            return this; // make the function chainable
         },
         getSwitcher: function (o, u) {
             var s = o.filter(z => u.match(z.name));
@@ -97,20 +99,6 @@
             var d = o.filter(z => (z.isEnglish == e || z.isEnglish == null) && 'default'.match(z.pattern));
             if (d.length > 0) return d[0].version;
             else return "";
-        },
-        isEmpty: function (o) {
-            if ($.isEmptyObject(o)) {
-                return true;
-            } else {
-                var p = Object.keys(o);
-
-                if (p.length < 1) {
-                    return true;
-                } else if ($.map(p, function (q) { return o[q] == null || o[q] == "" }).every(z => z == true)) {
-                    return true;
-                }
-            }
-            return false;
         },
         isUrlExcluded: function (s) {
             return $.map(s.urlExclusions, function (item) { return s.currentUrl.match(item); }).some(z => z == true);
@@ -155,13 +143,13 @@
                     '<span class="divider">|</span><span>&nbsp;<a href="' + s.archiveUrl + '" tabindex="2" target="_blank"> ' + this.t('help-archive') + '</a></span>',
                     '</div>');
 
-                var ajaxRequests = $.map(linkData.versions, function (item) { return (item.url === "javascript:void(0);" ? null : $.get(item.url)); });
+                var ajaxRequests = $.map(linkData.versions, function (item) { return (item.url === "javascript:void(0);" ? {} : $.get(item.url)); });
                 ajaxRequests.push($(s.switcherLocation).after(links));
 
                 $.whenAll(ajaxRequests).always(function () {
                     $.each(ajaxRequests, function (i, req) {
                         if (i < linkData.versions.length) {
-                            if ((req.status || req[2].status) != 200) {
+                            if ((req.status || (req[2] && req[2].status)) != 200) {
                                 $('#' + linkData.versions[i].id).attr("href", "javascript:void(0)").removeClass("available").addClass("disabled");
 
                             } else {
@@ -224,11 +212,11 @@
 
             $.each(s.switcher.versions, function (version, obj) {
                 var id = version.replace(/[^a-z0-9\s]/gi, '');
-                var path = obj.basepath != undefined && obj.basepath != null && obj.basepath !== "" ? "/" + self.getCurrentLang() + "/" + obj.basepath : "";
-                var platforms = obj.platforms != undefined && !$.isEmptyObject(obj.platforms) && obj.platforms != null ? obj.platforms : s.switcher.platforms;
+                var path = obj.basepath != undefined && !self._isObjectEmptyOrNull(obj.basepath) ? "/" + self.getCurrentLang() + "/" + obj.basepath : "";
+                var platforms = obj.platforms != undefined && !self._isObjectEmptyOrNull(obj.platforms) != null ? obj.platforms : s.switcher.platforms;
                 var targetUrl = {};
 
-                if (platforms != undefined && !$.isEmptyObject(platforms) && platforms != null) {
+                if (platforms != undefined && !self._isObjectEmptyOrNull(platforms)) {
                     menuItems += '<span class="dropdown-title">' + (obj.title != undefined ? obj.title : version) + '</span>';
 
                     $.each(platforms, function (platformId, platform) {
@@ -240,14 +228,14 @@
                         versions.push({ id, url: targetUrl.url });
                     });
 
-                } else if (path !== "") {
+                } else if (!self._isStringEmptyOrNull(path)) {
                     targetUrl = self.getTargetUrl({ matches: { absolutePath, path }, version });
                     menuItems += '<a id="' + id + '" class="dropdown-link ' + targetUrl.cssClass + '" data-plat="' + version + '" data-version="' + version
                         + '" href="' + targetUrl.url + '">' + (obj.title != undefined ? obj.title : version) + '</a>';
 
                     versions.push({ id, url: targetUrl.url });
 
-                } else if (self.isEmpty(obj)) {
+                } else if (self._isObjectEmptyOrNull(obj)) {
                     menuItems += '<a id="' + id + '" class="dropdown-link disabled" data-plat="' + version + '" data-version="' + version
                         + '" href="javascript:void(0);">' + version + '</a>';
                 }
@@ -268,6 +256,14 @@
             }
             else {
                 var url = "javascript:void(0);";
+                var redirected = s.switcher.versions[values.version].redirected;
+
+                if (redirected != undefined && redirected != null) {
+                    if (redirected.sections && $.map(redirected.sections, function (item) { return values.matches.absolutePath.indexOf(item) >= 0; }).some(z => z == true)) {
+                        return { cssClass: "disabled", url };
+                    }
+                }
+
                 var filename = this.checkExceptionList(values.version, values.matches.platformId);
                 if (filename != null) {
                     url = values.matches.absolutePath.replace("/" + this.getCurrentLang() + "/" + s.switcher.versions[s.version].basepath, values.matches.path)
@@ -302,6 +298,25 @@
             $('#platforms .dropdown-menu a').on("click", function () {
                 window.location.href = $(this).attr("href");
             });
+        },
+        _isObjectEmptyOrNull: function (o) {
+            var self = this;
+            if ($.isEmptyObject(o)) {
+                return true;
+            } else {
+                var p = Object.keys(o);
+
+                if (p.length < 1) {
+                    return true;
+                } else if ($.map(p, function (q) { return self._isStringEmptyOrNull(q); }).every(z => z == true)) {
+                    return true;
+                }
+            }
+            return false;
+        },
+        _isStringEmptyOrNull: function (s) {
+            var t = $.type(s);
+            return t === "string" ? $.trim(s).length < 1 : t === "null" || t === "undefined" ? true : false;
         }
     };
 
