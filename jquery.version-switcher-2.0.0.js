@@ -113,7 +113,7 @@
             var c = this.settings.switcher.path.format.split("/");
             var p = this.settings.pathName.split("/").slice(1);
 
-            return $.map(p, function (v, i) { return { index: i, name: c[i].replace(/\{\{(.*?)\}\}/g, "$1"), value: v }; });
+            return $.map(p, function (v, i) { return { index: i, name: c[i].toFieldname(), value: v }; });
         },
         main: function (data) {
             this.updateSettings(data);
@@ -211,7 +211,7 @@
             $.each(s.switcher.versions, function (version, obj) {
                 var id = version.replace(/[^a-z0-9\s]/gi, '');
                 var menuItemTitle = s.versionMapping[version] != undefined ? s.versionMapping[version] : obj.title != undefined ? obj.title : version;
-                var path = "/" + self.getCurrentLang() + "/" + self.getBasePath(obj) + "/";
+                var path = ("/" + self.getCurrentLang() + "/" + self.getBasePath(obj) + "/").cleanUrlPath();
                 var platforms = self.getPlatforms(obj);
                 var targetUrl = {};
 
@@ -249,14 +249,13 @@
         getBasePath: function (obj) {
             var s = this.settings;
             if (obj.basepath != undefined && !this._isObjectEmptyOrNull(obj.basepath)) {
-                var r = $.map(obj.basepath.replace(/(^\/|)(.*)(\/$)/, "$2").split("/"), function (item) {
-                    var q = s.switcher.path.components.filter(z => z.name === item.replace(/\{\{(.*?)\}\}/g, "$1"));
+                var r = $.map(obj.basepath.split("/"), function (item) {
+                    var q = s.switcher.path.components.filter(z => z.name === item.toFieldname());
                     return q.length > 0 ? q[0].value : item;
                 });
-
                 return r.join("/");
             }
-            return "/";
+            return "";
         },
         getPlatforms: function (obj) {
             var s = this.settings;
@@ -293,7 +292,7 @@
                 var filename = this.checkExceptionList(values.version, values.matches.platformId);
                 if (filename != null) {
                     url = values.matches.absolutePath.replace("/" + this.getCurrentLang() + "/" + this.getBasePath(s.switcher.versions[s.version]), values.matches.path)
-                        .replace(s.filename, filename).replace("//", "/");
+                        .replace(s.filename, filename).cleanUrlPath();
 
                     if (values.matches.platformId != undefined) {
                         url = url.replace(s.platform, values.matches.platformId);
@@ -345,6 +344,23 @@
             return t === "string" ? $.trim(s).length < 1 : t === "null" || t === "undefined" ? true : false;
         }
     };
+
+    // Extensions
+    Object.defineProperty(String.prototype, "cleanUrlPath", {
+        value: function cleanUrlPath() {
+            return this.replace(/([\/]{2,})/g, "/");
+        },
+        writeable: true,
+        configurable: true
+    });
+    Object.defineProperty(String.prototype, "toFieldname", {
+        value: function toFieldname() {
+            return this.replace(/\{\{(.*?)\}\}/g, "$1")
+        },
+        writeable: true,
+        configurable: true
+    });
+    // End of Extension
 
     $.fn.versionswitcher = function (options) {
         return this.each(function () {
