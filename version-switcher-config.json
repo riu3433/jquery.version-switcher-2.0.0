@@ -1,7 +1,7 @@
 {
   "switchers": [
     {
-      "name": "([a-zA-Z-]{2,5})(\/documentation\/install\/database-server\/)",
+      "name": "([a-zA-Z-]{2,5})\\/([a-zA-Z\\-]+)\\/([a-zA-Z\\-]+)\\/([a-zA-Z\\-]+)\\/(latest|[0-9\\.]+)\\/([a-zA-Z\\-]+\\.htm)",
       "path": {
         "__description": "path has a property: format - is used as template to determine the final URL Path.",
         "format": "{{language}}/{{site}}/{{section}}/{{section}}/{{version}}/{{filename}}"
