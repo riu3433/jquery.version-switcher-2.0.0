@@ -249,17 +249,14 @@
         getBasePath: function (obj) {
             var s = this.settings;
             if (obj.basepath != undefined && !this._isObjectEmptyOrNull(obj.basepath)) {
-                var p = obj.basepath.replace(/(^\/|)(.*)(\/$)/, "$2").split("/");
-
-                var r = $.map(p, function (item) {
+                var r = $.map(obj.basepath.replace(/(^\/|)(.*)(\/$)/, "$2").split("/"), function (item) {
                     var q = s.switcher.path.components.filter(z => z.name === item.replace(/\{\{(.*?)\}\}/g, "$1"));
                     return q.length > 0 ? q[0].value : item;
                 });
 
                 return r.join("/");
             }
-
-            return "";
+            return "/";
         },
         getPlatforms: function (obj) {
             var s = this.settings;
