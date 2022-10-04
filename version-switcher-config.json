@@ -7,6 +7,7 @@
         "format": "{{language}}/{{site}}/{{section}}/{{section}}/{{version}}/{{filename}}"
       },
       "platforms": {},
+      "sites": {},
       "switcherdisplay": true,
       "versions": {
         "11.0": {
@@ -18,12 +19,10 @@
           "basepath": ""
         },
         "10.8": {
-          "basepath": "documentation/install/database-server/10.8/",
-          "title": "10.8.x"
+          "basepath": "{{site}}/install/database-server/10.8/"
         },
         "10.7": {
-          "basepath": "documentation/install/database-server/10.7/",
-          "title": "10.7.x"
+          "basepath": "{{site}}/install/database-server/10.7/"
         }
       },
       "exceptions": {
@@ -37,77 +36,38 @@
       }
     },
     {
-      "name": "([a-zA-Z-]{2,5})(\/geoevent\/).*(\/administer|analyze|deploy|disseminate-and-notify|geoevent-services|get-started|ingest|install|reference\/)",
+      "name": "([a-zA-Z-]{2,5})\\/([a-zA-Z\\-]+)\\/(latest|[0-9\\.]+)\\/([a-zA-Z\\-]+)\\/([a-zA-Z\\-]+\\.htm)",
       "path": {
         "__description": "path has a property: format - is used as template to determine the final URL Path.",
         "format": "{{language}}/{{site}}/{{version}}/{{section}}/{{filename}}"
       },
       "platforms": {},
+      "sites": {},
       "switcherdisplay": true,
       "versions": {
         "11.0": {
-          "basepath": "geoevent/latest/"
-        },
-        "10.9.1": {
-          "basepath": "geoevent/10.9.1/"
-        },
-        "10.9": {
-          "basepath": "geoevent/10.9/"
-        },
-        "10.8": {
-          "basepath": "geoevent/10.8/"
-        },
-        "10.7": {
-          "basepath": "geoevent/10.7/"
-        }
-      },
-      "exceptions": {
-        "__order": {
-          "10.9.1": 1,
-          "10.9": 2,
-          "10.8": 3,
-          "10.7": 4
-        },
-        "sample1": [
-          {
-            "version": "11.0",
-            "platform": "*"
-          }
-        ]
-      }
-    },
-    {
-      "name": "([a-zA-Z-]{2,5})(\/roads-highways\/).*(\/event-editor|get-started|roadway-reporter\/|)",
-      "path": {
-        "__description": "path has a property: format - is used as template to determine the final URL Path.",
-        "format": "{{language}}/{{site}}/{{version}}/{{section}}/{{filename}}"
-      },
-      "platforms": {},
-      "switcherdisplay": true,
-      "versions": {
-        "11.0": {
-          "basepath": "roads-highways/latest",
+          "basepath": "{{site}}/latest",
           "redirected": {
             "sections": [ "roadway-reporter" ]
           }
         },
         "10.9.1": {
-          "basepath": "roads-highways/10.9.1",
+          "basepath": "{{site}}/10.9.1",
           "redirected": {
             "sections": [ "roadway-reporter" ]
           }
         },
         "10.9": {
-          "basepath": "roads-highways/10.9",
+          "basepath": "{{site}}/10.9",
           "redirected": {
             "sections": [ "roadway-reporter" ]
           }
         },
         "10.8": {
-          "basepath": "roads-highways/10.8"
+          "basepath": "{{site}}/10.8"
         },
         "10.7": {
-          "basepath": "roads-highways/10.7"
+          "basepath": "{{site}}/10.7"
         }
       },
       "exceptions": {
@@ -126,7 +86,7 @@
       }
     },
     {
-      "name": "([a-zA-Z-]{2,5})(\/server\/).*(\/deploy|get-started|manage-data|publish-services|administer|develop\/|)",
+      "name": "([a-zA-Z-]{2,5})\\/([a-zA-Z\\-]+)\\/(latest|[0-9\\.]+)\\/([a-zA-Z\\-]+)\\/([a-zA-Z\\-]+)\\/([a-zA-Z\\-]+\\.htm)",
       "path": {
         "__description": "path has a property: format - is used as template to determine the final URL Path.",
         "format": "{{language}}/{{site}}/{{version}}/{{section}}/{{platform}}/{{filename}}"
@@ -139,22 +99,37 @@
           "title": "Windows"
         }
       },
+      "sites": {
+        "web-adaptor": {
+          "platforms": {
+            "iis": {
+              "title": "IIS"
+            },
+            "java-windows": {
+              "title": "Java (Windows)"
+            },
+            "java-linux": {
+              "title": "Java (Linux)"
+            }
+          }
+        }
+      },
       "switcherdisplay": true,
       "versions": {
         "11.0": {
-          "basepath": "server/latest"
+          "basepath": "{{site}}/latest"
         },
         "10.9.1": {
-          "basepath": "server/10.9.1"
+          "basepath": "{{site}}/10.9.1"
         },
         "10.9": {
-          "basepath": "server/10.9"
+          "basepath": "{{site}}/10.9"
         },
         "10.8": {
-          "basepath": "server/10.8"
+          "basepath": "{{site}}/10.8"
         },
         "10.7": {
-          "basepath": "server/10.7"
+          "basepath": "{{site}}/10.7"
         }
       },
       "exceptions": {
@@ -256,108 +231,6 @@
         ],
         "connect-to-arcgis-server-from-arcgis-desktop_TBD": [ "-", "-", "R", "-", "-", "-", "-", "-", "-", "-", "x", "x", "x", "x", "x", "x" ],
         "deploy-arcgis-server_TBD": [ "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "x", "x", "x", "x", "x", "x" ]
-      }
-    },
-    {
-      "name": "([a-zA-Z]{2,5})(\/web-adaptor\/).*(\/install\/)",
-      "path": {
-        "__description": "path has a property: format - is used as template to determine the final URL Path.",
-        "format": "{{language}}/{{site}}/{{version}}/{{section}}/{{platform}}/{{filename}}"
-      },
-      "platforms": {
-        "iis": {
-          "title": "IIS"
-        },
-        "java-windows": {
-          "title": "Java (Windows)"
-        },
-        "java-linux": {
-          "title": "Java (Linux)"
-        }
-      },
-      "switcherdisplay": true,
-      "versions": {
-        "11.0": {
-          "basepath": "web-adaptor/latest"
-        },
-        "10.9.1": {
-          "basepath": "web-adaptor/10.9.1"
-        },
-        "10.9": {
-          "basepath": "web-adaptor/10.9"
-        },
-        "10.8": {
-          "basepath": "web-adaptor/10.8"
-        },
-        "10.7": {
-          "basepath": "web-adaptor/10.7"
-        }
-      },
-      "exceptions": {
-        "__order": {
-          "11.0~iis": 1,
-          "11.0~java-windows": 2,
-          "11.0~java-linux": 3,
-          "10.9.1~iis": 4,
-          "10.9.1~java-windows": 5,
-          "10.9.1~java-linux": 6,
-          "10.9~iis": 7,
-          "10.9~java-windows": 8,
-          "10.9~java-linux": 9,
-          "10.8~iis": 10,
-          "10.8~java-windows": 11,
-          "10.8~java-linux": 12,
-          "10.7~iis": 13,
-          "10.7~java-windows": 14,
-          "10.7~java-linux": 15
-        }
-      }
-    },
-    {
-      "name": "([a-zA-Z]{2,5})(\/notebook\/).*(\/administer|install|python|use\/)",
-      "path": {
-        "__description": "path has a property: format - is used as template to determine the final URL Path.",
-        "format": "{{language}}/{{site}}/{{version}}/{{section}}/{{platform}}/{{filename}}"
-      },
-      "platforms": {
-        "linux": {
-          "title": "Linux"
-        },
-        "windows": {
-          "title": "Windows"
-        }
-      },
-      "switcherdisplay": true,
-      "versions": {
-        "11.0": {
-          "basepath": "notebook/latest/"
-        },
-        "10.9.1": {
-          "basepath": "notebook/10.9.1/"
-        },
-        "10.9": {
-          "basepath": "notebook/10.9/"
-        },
-        "10.8": {
-          "basepath": "notebook/10.8/"
-        },
-        "10.7": {
-          "basepath": "notebook/10.7/"
-        }
-      },
-      "exceptions": {
-        "__order": {
-          "11.0~linux": 1,
-          "11.0~windows": 2,
-          "10.9.1~linux": 3,
-          "10.9.1~windows": 4,
-          "10.9~linux": 5,
-          "10.9~windows": 6,
-          "10.8~linux": 7,
-          "10.8~windows": 8,
-          "10.7~linux": 9,
-          "10.7~windows": 10
-        }
       }
     },
     {

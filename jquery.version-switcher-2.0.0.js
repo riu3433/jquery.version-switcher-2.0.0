@@ -23,6 +23,7 @@
             relativeUrl: false,
             searchFormUrl: "/search/",
             settingLocation: "./js/version-switcher-config.json",
+            site: "",
             switcher: {},
             switcherLinkClass: "current",
             switcherLocation: ".column-13 h1, .column-17 h1, .column-18 h1",
@@ -63,16 +64,16 @@
             }
         },
         updateSettings: function (data) {
-            var self = this;
             this.settings.switcher = this.getSwitcher(data.switchers, this.settings.currentUrl);
             this.settings.isEnglish = this.settings.currentUrl.match(/(\/en\/)/) != null;
             this.settings.version = this.getVersion(data.versionOptions, this.settings.isEnglish, this.settings.pathName);
 
             var pathparts = this.settings.pathName.split("/");
-            this.settings.filename = pathparts[pathparts.length - 1];
             this.settings.isHome = pathparts.length <= 4;
-            this.settings.platform = pathparts[pathparts.length - 2];
             this.settings.switcher.path.components = this.setPathComponents();
+            this.settings.filename = this.settings.switcher.path.components.filter(z => z.name === "filename")[0].value;
+            this.settings.platform = this.getPlatform();
+            this.settings.site = this.settings.switcher.path.components.filter(z => z.name === "site")[0].value;
 
             this.settings.templates = $.extend(this.settings.templates, data.templates);
             this.settings.versionMapping = data.versionMapping;
@@ -91,6 +92,10 @@
             var d = o.filter(z => 'default'.match(z.name));
             if (d.length > 0) return d[0];
             else return {};
+        },
+        getPlatform: function () {
+            var p = this.settings.switcher.path.components.filter(z => z.name === "platform");
+            return p.length > 0 ? p[0].value : "none";
         },
         getVersion: function (o, e, p) {
             var v = o.filter(z => (z.isEnglish == e || z.isEnglish == null) && p.match(z.pattern));
@@ -123,16 +128,9 @@
             var s = this.settings;
 
             if (!(s.isHome) && (s.switcher.switcherdisplay)) {
-                var c = s.switcher.versions[s.version].platforms != undefined ? s.switcher.version[s.version].platforms[s.platform] :
-                    s.switcher.platforms != undefined ? s.switcher.platforms[s.platform] : undefined;
-
-                var versionLabel = (s.customVersionLabel) ? s.customVersionLabel : (s.version in s.versionMapping) ? s.versionMapping[s.version] : s.version;
-                var versionName = (s.customVersionName != undefined) ? s.customVersionName : 'ArcGIS';
-                var currentPlatTxt = c != undefined ? versionName + ' ' + versionLabel + ' (' + c.title + ')' : versionName + ' ' + versionLabel;
                 var linkData = self.generateSwitcherLinks();
-
                 var links = ('<div class="trailer-1" id="platforms">').concat(
-                    '<span class="product text-light-gray">' + currentPlatTxt + '</span>',
+                    '<span class="product text-light-gray">' + self.getProductTitle() + '</span>',
                     '<span class="divider"> | </span>',
                     '<span class="dropdown js-dropdown dropdown-btn js-dropdown-toggle">',
                     '<button class="btn btn-transparent" href="#" tabindex="0" aria-haspopup="true" aria-expanded="false"> ' + this.t('other-versions'),
@@ -213,8 +211,8 @@
             $.each(s.switcher.versions, function (version, obj) {
                 var id = version.replace(/[^a-z0-9\s]/gi, '');
                 var menuItemTitle = s.versionMapping[version] != undefined ? s.versionMapping[version] : obj.title != undefined ? obj.title : version;
-                var path = obj.basepath != undefined && !self._isObjectEmptyOrNull(obj.basepath) ? "/" + self.getCurrentLang() + "/" + obj.basepath : "";
-                var platforms = obj.platforms != undefined && !self._isObjectEmptyOrNull(obj.platforms) != null ? obj.platforms : s.switcher.platforms;
+                var path = "/" + self.getCurrentLang() + "/" + self.getBasePath(obj) + "/";
+                var platforms = self.getPlatforms(obj);
                 var targetUrl = {};
 
                 if (platforms != undefined && !self._isObjectEmptyOrNull(platforms)) {
@@ -248,6 +246,36 @@
         getCurrentLang: function () {
             return this.settings.localeDir || "en";
         },
+        getBasePath: function (obj) {
+            var s = this.settings;
+            if (obj.basepath != undefined && !this._isObjectEmptyOrNull(obj.basepath)) {
+                var p = obj.basepath.replace(/(^\/|)(.*)(\/$)/, "$2").split("/");
+
+                var r = $.map(p, function (item) {
+                    var q = s.switcher.path.components.filter(z => z.name === item.replace(/\{\{(.*?)\}\}/g, "$1"));
+                    return q.length > 0 ? q[0].value : item;
+                });
+
+                return r.join("/");
+            }
+
+            return "";
+        },
+        getPlatforms: function (obj) {
+            var s = this.settings;
+            if (obj.sites != undefined && obj.sites[s.site].platforms != undefined && !this._isObjectEmptyOrNull(obj.sites[s.site].platforms) != null) return obj.sites[s.site].platforms;
+            if (s.switcher.sites[s.site] && s.switcher.sites[s.site].platforms) return s.switcher.sites[s.site].platforms;
+
+            return s.switcher.platforms;
+        },
+        getProductTitle: function () {
+            var s = this.settings;
+            var p = this.getPlatforms(s.switcher.versions[s.version]);
+            var l = (s.customVersionLabel) ? s.customVersionLabel : (s.version in s.versionMapping) ? s.versionMapping[s.version] : s.version;
+            var n = (s.customVersionName != undefined) ? s.customVersionName : "ArcGIS";
+
+            return p != undefined && !this._isObjectEmptyOrNull(p) ? n + ' ' + l + ' (' + p[s.platform].title + ')' : n + ' ' + l;
+        },
         getTargetUrl: function (values) {
             var s = this.settings;
 
@@ -267,8 +295,8 @@
 
                 var filename = this.checkExceptionList(values.version, values.matches.platformId);
                 if (filename != null) {
-                    url = values.matches.absolutePath.replace("/" + this.getCurrentLang() + "/" + s.switcher.versions[s.version].basepath, values.matches.path)
-                        .replace(s.filename, filename);
+                    url = values.matches.absolutePath.replace("/" + this.getCurrentLang() + "/" + this.getBasePath(s.switcher.versions[s.version]), values.matches.path)
+                        .replace(s.filename, filename).replace("//", "/");
 
                     if (values.matches.platformId != undefined) {
                         url = url.replace(s.platform, values.matches.platformId);
