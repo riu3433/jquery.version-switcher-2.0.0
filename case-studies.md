@@ -22,6 +22,9 @@ Using RegEx pattern ` "([a-zA-Z-]{2,5})\\/([a-zA-Z\\-]+)\\/([a-zA-Z\\-]+)\\/([a-
 
 ### "{{language}}/{{site}}/{{version}}/{{section}}/{{filename}}"
 Using RegEx pattern ` "([a-zA-Z-]{2,5})\\/([a-zA-Z\\-]+)\\/(latest|[0-9\\.]+)\\/([a-zA-Z\\-]+)\\/([a-zA-Z\\-]+\\.htm)" `
-1. /en/geoevent/latest/administer/ports-used-by-geoevent.htm
-2. /en/roads-highways/10.8/roadway-reporter/roadway-reporter.htm
+* /en/cloud/latest/intro
+* /en/geoevent/latest/administer/ports-used-by-geoevent.htm
+* /en/roads-highways/10.8/roadway-reporter/roadway-reporter.htm
    * Versions 10.9, 10.9.1, and 11.0 has server side redirect (htacces) on "section" `roadway-reporter`
+
+
