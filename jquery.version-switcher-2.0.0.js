@@ -349,22 +349,14 @@
                 console.log("executeCallback");
             }
         },
-        _getAlternateBasePath: function (version, i, pathComponents, obj) {
+        _getAlternateBasePath: function (v, i, u, obj) {
             if (this._isObjectEmptyOrNull(obj)) return undefined;
             if (obj.hasOwnProperty("basepath")) return this._isObjectEmptyOrNull(obj.basepath) ? undefined : obj.basepath;
 
-            var fieldName = pathComponents[i].name + "s";
-            var fieldValue = pathComponents[i].value;
-
-            obj = obj[fieldName];
+            var n = u[i].name + "s";
+            obj = obj[n];
             if (this._isObjectEmptyOrNull(obj)) return undefined;
-
-            if (fieldName == "versions") {
-                return this._getAlternateBasePath(version, i + 1, pathComponents, obj[version]);
-            }
-            else {
-                return this._getAlternateBasePath(version, i + 1, pathComponents, obj[fieldValue]);
-            }
+            return this._getAlternateBasePath(v, i + 1, u, n == "versions" ? obj[v] : obj[u[i].value]);
         },
         _isObjectEmptyOrNull: function (o) {
             var self = this;
