@@ -250,16 +250,13 @@
         },
         getBasePath: function (version, obj) {
             var s = this.settings;
-            //var alternateBasePath = this._getAlternateBasePath(version);
-            var alternateBasePath = this._getAlternateBasePath(version, 0, s.switcher.path.components.slice(1), s.switcher);
-            if (alternateBasePath != undefined) {
-                return alternateBasePath;
-            }
+
+            var basePathEx = this._getBasePathEx(version, 0, s.switcher.path.components.slice(1), s.switcher);
+            if (basePathEx != undefined) return basePathEx;
 
             if (obj.basepath == undefined) return obj.basepath;
             if (this._isObjectEmptyOrNull(obj.basepath)) return null;
 
-            var s = this.settings;
             var r = $.map(obj.basepath.split("/"), function (item) {
                 var q = s.switcher.path.components.filter(z => z.name === $.toFieldname(item));
                 return q.length > 0 ? q[0].value : item;
@@ -343,13 +340,14 @@
             });
         },
         executeCallback: function () {
+            // Future work
             var s = this.settings;
 
             if (!this._isObjectEmptyOrNull(s.callback)) {
                 console.log("executeCallback");
             }
         },
-        _getAlternateBasePath: function (v, i, u, obj) {
+        _getBasePathEx: function (v, i, u, obj) {
             if (this._isObjectEmptyOrNull(obj)) return undefined;
             if (obj.hasOwnProperty("basepath")) return this._isObjectEmptyOrNull(obj.basepath) ? undefined : obj.basepath;
 
