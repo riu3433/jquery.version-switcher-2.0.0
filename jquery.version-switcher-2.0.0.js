@@ -354,7 +354,7 @@
             var n = u[i].name + "s";
             obj = obj[n];
             if (this._isObjectEmptyOrNull(obj)) return undefined;
-            return this._getAlternateBasePath(v, i + 1, u, n == "versions" ? obj[v] : obj[u[i].value]);
+            return this._getBasePathEx(v, i + 1, u, n == "versions" ? obj[v] : obj[u[i].value]);
         },
         _isObjectEmptyOrNull: function (o) {
             var self = this;
