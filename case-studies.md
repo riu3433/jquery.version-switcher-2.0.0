@@ -12,6 +12,7 @@ The following list of urls have tested with positive results:
 * Platforms: `linux` and `windows`
 
 - [x] /en/data-store/latest/install/windows
+- [x] /en/enterprise/latest/install/linux/arcgis-enterprise-builder.htm
 - [x] /en/geonalytics/latest/intall/windows
 - [x] /en/image/latest/get-started/windows
 - [x] /en/portal/10.7/install/windows/welcome-to-the-portal-for-arcgis-installation-guide.htm
