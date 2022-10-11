@@ -38,8 +38,8 @@ Using RegEx pattern ` "([a-zA-Z-]{2,5})\\/([a-zA-Z\\-]+)\\/(latest|[0-9\\.]+)\\/
    * Versions 10.9, 10.9.1, and 11.0 has server side redirect (htacces) on "site" `monitor`
 * /en/roads-highways/10.8/roadway-reporter/roadway-reporter.htm
    * Versions 10.9, 10.9.1, and 11.0 has server side redirect (htacces) on "section" `roadway-reporter`
-* /en/sites/latest/get-started/about-this-application.htm
-   * Version 10.7.x use https://enterprise.arcgis.com/en/portal/10.7/use/about-this-application.htm (not implemented yet)
+[x] /en/sites/latest/get-started/about-this-application.htm
+   [x] Version 10.7.x use https://enterprise.arcgis.com/en/portal/10.7/use/about-this-application.htm
 
 
 ### "{{language}}/{{site}}/{{version}}/{{platform}}/{{filename}}"
