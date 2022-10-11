@@ -18,13 +18,13 @@ The following list of urls have tested with positive results:
 - [x] /en/web-adaptor/latest/install/java-windows/welcome-arcgis-web-adaptor-install-guide.htm
    * Exception to platforms `iis`, `java-window`, and `java-linus`
 - [x] /en/server/latest/deploy/windows/adding-a-gis-server-to-a-site-in-manager.htm
-   * Need to confirm
+   * Need to confirm - being worked on.
 - [x] /en/workflow/latest/install/windows/welcome-to-workflow-manager-server-installation-guide.htm
 
 
 ### "{{language}}/{{site}}/{{section}}/{{section}}/{{version}}/{{filename}}"
 Using RegEx pattern ` "([a-zA-Z-]{2,5})\\/([a-zA-Z\\-]+)\\/([a-zA-Z\\-]+)\\/([a-zA-Z\\-]+)\\/(latest|[0-9\\.]+)\\/([a-zA-Z\\-]+\\.htm)" `
-- [ ] /en/documentation/install/database-server/10.7/intro-workgroup-database-server-installation.htm
+- [x] /en/documentation/install/database-server/10.7/intro-workgroup-database-server-installation.htm
     * Note: Needs review for generalization.
 
 
@@ -32,7 +32,7 @@ Using RegEx pattern ` "([a-zA-Z-]{2,5})\\/([a-zA-Z\\-]+)\\/([a-zA-Z\\-]+)\\/([a-
 Using RegEx pattern ` "([a-zA-Z-]{2,5})\\/([a-zA-Z\\-]+)\\/(latest|[0-9\\.]+)\\/([a-zA-Z\\-]+)\\/([a-zA-Z\\-]+\\.htm)" `
 - [x] /en/cloud/latest/intro
 - [x] /en/defense-mapping/latest/get-started
-   - [ ] Display version 11.0 and 10.9.1 only - in progress
+   - [x] Display version 11.0 and 10.9.1 only
 - [x] /en/geoevent/latest/administer/ports-used-by-geoevent.htm
 - [x] /en/knowledge/latest/introduction/what-is-arcgis-knowledge.htm
 - [x] /en/monitor/10.8/get-started/what-is-arcgis-monitor.htm

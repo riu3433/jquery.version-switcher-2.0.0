@@ -210,7 +210,8 @@
                 absolutePath = s.switcher.path.components != undefined ? "/" + $.map(s.switcher.path.components, function (obj) { return obj.value; }).join("/") : "",
                 versions = [];
 
-            $.each(s.switcher.versions, function (version, obj) {
+            //$.each(s.switcher.versions, function (version, obj) {
+            $.each(self._getVersions(), function (version, obj) {
                 var id = version.replace(/[^a-z0-9\s]/gi, '');
                 var menuItemTitle = s.versionMapping[version] != undefined ? s.versionMapping[version] : obj.title != undefined ? obj.title : version;
                 var path = $.cleanUrlPath("/" + self.getCurrentLang() + "/" + self.getBasePath(version, obj) + "/");
@@ -346,6 +347,17 @@
             if (!this._isObjectEmptyOrNull(s.callback)) {
                 console.log("executeCallback");
             }
+        },
+        _getVersions: function () {
+            var self = this;
+            var s = self.settings;
+            var r = {};
+
+            $.each(s.switcher.versions, function (k, v) {
+                if ((!v.hasOwnProperty("hidden")) ||
+                    (!self._isObjectEmptyOrNull(v.hidden) && !self._isObjectEmptyOrNull(v.hidden.sites) && !(v.hidden.sites.some(z => z === s.site)))) r[k] = v;
+            });
+            return r;
         },
         _getBasePathEx: function (v, i, u, obj) {
             if (this._isObjectEmptyOrNull(obj)) return undefined;
