@@ -250,7 +250,8 @@
         },
         getBasePath: function (version, obj) {
             var s = this.settings;
-            var alternateBasePath = this._getAlternateBasePath(version);
+            //var alternateBasePath = this._getAlternateBasePath(version);
+            var alternateBasePath = this._getAlternateBasePath(version, 0, s.switcher.path.components.slice(1), s.switcher);
             if (alternateBasePath != undefined) {
                 return alternateBasePath;
             }
@@ -348,21 +349,22 @@
                 console.log("executeCallback");
             }
         },
-        _getAlternateBasePath: function (version) {
-            // These should be done dynmically
-            var s = this.settings;
-            if (this._isObjectEmptyOrNull(s.switcher.sites)) return undefined;
+        _getAlternateBasePath: function (version, i, pathComponents, obj) {
+            if (this._isObjectEmptyOrNull(obj)) return undefined;
+            if (obj.hasOwnProperty("basepath")) return this._isObjectEmptyOrNull(obj.basepath) ? undefined : obj.basepath;
 
-            var site = s.switcher.sites[s.site];
-            if (this._isObjectEmptyOrNull(site)) return undefined;
+            var fieldName = pathComponents[i].name + "s";
+            var fieldValue = pathComponents[i].value;
 
-            var versions = site.versions;
-            if (this._isObjectEmptyOrNull(versions)) return undefined;
+            obj = obj[fieldName];
+            if (this._isObjectEmptyOrNull(obj)) return undefined;
 
-            var v = versions[version];
-            if (this._isObjectEmptyOrNull(v)) return undefined;
-
-            return this._isObjectEmptyOrNull(v.basepath) ? undefined : v.basepath;
+            if (fieldName == "versions") {
+                return this._getAlternateBasePath(version, i + 1, pathComponents, obj[version]);
+            }
+            else {
+                return this._getAlternateBasePath(version, i + 1, pathComponents, obj[fieldValue]);
+            }
         },
         _isObjectEmptyOrNull: function (o) {
             var self = this;
