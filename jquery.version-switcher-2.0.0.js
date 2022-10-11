@@ -5,6 +5,7 @@
         version: '2.0.0',
         defaults: {
             archiveUrl: "https://resources.arcgis.com/en/help/",
+            callback: {},
             currentUrl: document.location.href,
             customVersionLabel: "",
             customVersionName: "ArcGIS",
@@ -122,6 +123,7 @@
             this.updateTabLinks();
 
             this.bindClickEvents();
+            this.executeCallback;
         },
         addSwitcherLinks: function () {
             var self = this;
@@ -211,7 +213,7 @@
             $.each(s.switcher.versions, function (version, obj) {
                 var id = version.replace(/[^a-z0-9\s]/gi, '');
                 var menuItemTitle = s.versionMapping[version] != undefined ? s.versionMapping[version] : obj.title != undefined ? obj.title : version;
-                var path = $.cleanUrlPath("/" + self.getCurrentLang() + "/" + self.getBasePath(obj) + "/");
+                var path = $.cleanUrlPath("/" + self.getCurrentLang() + "/" + self.getBasePath(version, obj) + "/");
                 var platforms = self.getPlatforms(obj);
                 var targetUrl = {};
 
@@ -246,7 +248,13 @@
         getCurrentLang: function () {
             return this.settings.localeDir || "en";
         },
-        getBasePath: function (obj) {
+        getBasePath: function (version, obj) {
+            var s = this.settings;
+            var alternateBasePath = this._getAlternateBasePath(version);
+            if (alternateBasePath != undefined) {
+                return alternateBasePath;
+            }
+
             if (obj.basepath == undefined) return obj.basepath;
             if (this._isObjectEmptyOrNull(obj.basepath)) return null;
 
@@ -273,6 +281,7 @@
             return p != undefined && !this._isObjectEmptyOrNull(p) ? n + ' ' + l + ' (' + p[s.platform].title + ')' : n + ' ' + l;
         },
         getTargetUrl: function (values) {
+            var self = this;
             var s = this.settings;
 
             if ($.map(values.matches, function (item) { return s.pathName.indexOf(item) >= 0; }).every(z => z == true)) {
@@ -284,14 +293,22 @@
                 var redirected = s.switcher.versions[values.version].redirected;
 
                 if (redirected != undefined && redirected != null) {
-                    if (redirected.sections && $.map(redirected.sections, function (item) { return values.matches.absolutePath.indexOf(item) >= 0; }).some(z => z == true)) {
+                    var redirectedKeys = Object.keys(redirected);
+                    var redirectedValues = [];
+                    $.each(redirectedKeys, function () {
+                        if (!self._isObjectEmptyOrNull(redirected[this])) {
+                            redirectedValues = $.merge(redirectedValues, redirected[this]);
+                        }
+                    });
+
+                    if ($.map(redirectedValues, function (item) { return values.matches.absolutePath.indexOf(item) >= 0; }).some(z => z == true)) {
                         return { cssClass: "disabled", url };
                     }
                 }
 
                 var filename = this.checkExceptionList(values.version, values.matches.platformId);
                 if (filename != null) {
-                    url = $.cleanUrlPath(values.matches.absolutePath.replace("/" + this.getCurrentLang() + "/" + this.getBasePath(s.switcher.versions[s.version]), values.matches.path)
+                    url = $.cleanUrlPath(values.matches.absolutePath.replace("/" + this.getCurrentLang() + "/" + this.getBasePath(s.version, s.switcher.versions[s.version]), values.matches.path)
                         .replace(s.filename, filename));
 
                     if (values.matches.platformId != undefined) {
@@ -323,6 +340,29 @@
             $('#platforms .dropdown-menu a').on("click", function () {
                 window.location.href = $(this).attr("href");
             });
+        },
+        executeCallback: function () {
+            var s = this.settings;
+
+            if (!this._isObjectEmptyOrNull(s.callback)) {
+                console.log("executeCallback");
+            }
+        },
+        _getAlternateBasePath: function (version) {
+            // These should be done dynmically
+            var s = this.settings;
+            if (this._isObjectEmptyOrNull(s.switcher.sites)) return undefined;
+
+            var site = s.switcher.sites[s.site];
+            if (this._isObjectEmptyOrNull(site)) return undefined;
+
+            var versions = site.versions;
+            if (this._isObjectEmptyOrNull(versions)) return undefined;
+
+            var v = versions[version];
+            if (this._isObjectEmptyOrNull(v)) return undefined;
+
+            return this._isObjectEmptyOrNull(v.basepath) ? undefined : v.basepath;
         },
         _isObjectEmptyOrNull: function (o) {
             var self = this;
