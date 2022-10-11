@@ -32,6 +32,7 @@ Using RegEx pattern ` "([a-zA-Z-]{2,5})\\/([a-zA-Z\\-]+)\\/([a-zA-Z\\-]+)\\/([a-
 Using RegEx pattern ` "([a-zA-Z-]{2,5})\\/([a-zA-Z\\-]+)\\/(latest|[0-9\\.]+)\\/([a-zA-Z\\-]+)\\/([a-zA-Z\\-]+\\.htm)" `
 - [x] /en/cloud/latest/intro
 - [x] /en/defense-mapping/latest/get-started
+   - [ ] Display version 11.0 and 10.9.1 only - in progress
 - [x] /en/geoevent/latest/administer/ports-used-by-geoevent.htm
 - [x] /en/knowledge/latest/introduction/what-is-arcgis-knowledge.htm
 - [x] /en/monitor/10.8/get-started/what-is-arcgis-monitor.htm
