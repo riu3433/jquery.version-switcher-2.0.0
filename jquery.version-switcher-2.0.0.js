@@ -172,6 +172,7 @@
 
             if (filename in s.switcher.exceptions) {
                 var c = s.switcher.exceptions[filename].filter(z => z.version == version && z.platform == platform);
+                if (c.length < 1) c = s.switcher.exceptions[filename].filter(z => z.version === "*" && z.platform == platform);
                 return c.length > 0 ? (c[0].filename == undefined ? s.filename : (c[0].filename.trim() === "" || c[0].filename == null ? null : c[0].filename.trim() + ".htm")) : s.filename;
 
             } else {
@@ -266,10 +267,12 @@
         },
         getPlatforms: function (obj) {
             var s = this.settings;
-            if (obj.sites != undefined && obj.sites[s.site].platforms != undefined && !this._isObjectEmptyOrNull(obj.sites[s.site].platforms) != null) return obj.sites[s.site].platforms;
-            if (s.switcher.sites[s.site] && s.switcher.sites[s.site].platforms) return s.switcher.sites[s.site].platforms;
+            var p = s.switcher.platforms;
 
-            return s.switcher.platforms;
+            if (obj.sites != undefined && obj.sites[s.site].platforms != undefined && !this._isObjectEmptyOrNull(obj.sites[s.site].platforms) != null) p = obj.sites[s.site].platforms;
+            else if (s.switcher.sites[s.site] && s.switcher.sites[s.site].platforms) p = s.switcher.sites[s.site].platforms;
+
+            return s.platform in p ? p : {};
         },
         getProductTitle: function () {
             var s = this.settings;
@@ -277,7 +280,7 @@
             var l = (s.customVersionLabel) ? s.customVersionLabel : (s.version in s.versionMapping) ? s.versionMapping[s.version] : s.version;
             var n = (s.customVersionName != undefined) ? s.customVersionName : "ArcGIS";
 
-            return p != undefined && !this._isObjectEmptyOrNull(p) ? n + ' ' + l + ' (' + p[s.platform].title + ')' : n + ' ' + l;
+            return p != undefined && !this._isObjectEmptyOrNull(p) && p.hasOwnProperty(s.platform) ? n + ' ' + l + ' (' + p[s.platform].title + ')' : n + ' ' + l;
         },
         getTargetUrl: function (values) {
             var self = this;
@@ -343,7 +346,7 @@
         executeCallback: function () {
             // Future work
             var s = this.settings;
-
+            console.log(s.callback);
             if (!this._isObjectEmptyOrNull(s.callback)) {
                 console.log("executeCallback");
             }
